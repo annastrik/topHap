@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CreateAccountNegativeTest extends SingleTest {
 
-    @Disabled
     @Test
     void attemptToCreateAccountWithFailedData() throws InterruptedException {
 

@@ -6,10 +6,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.tophap.TestHelper;
-import pages.HomePage;
 import pages.ProfilePage;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class MainPage extends BasePage {
 
@@ -56,6 +56,11 @@ public abstract class MainPage extends BasePage {
     @FindBy(xpath = "//li[text()='New Construction']")
     public WebElement newConstructionSubMenuItem;
 
+    @FindBys({
+            @FindBy(css = ".th-link")
+    })
+    public List<WebElement> footerLinks;
+
     public MainPage(WebDriver driver) {
         super(driver);
     }
@@ -94,5 +99,11 @@ public abstract class MainPage extends BasePage {
 
     public void openFindPropertiesMenu() {
         TestHelper.moveToElement(getDriver(), findPropertiesMenuItem);
+    }
+
+    public void forEachFooterLink(Consumer<WebElement> acceptElement) {
+        for (WebElement footerLink : this.footerLinks) {
+            acceptElement.accept(footerLink);
+        }
     }
 }
