@@ -24,6 +24,9 @@ public class ProfilePage extends MainPage {
     @FindBy(xpath = "//input[@placeholder='Email']")
     public WebElement emailField;
 
+    @FindBy(css = ".MuiIconButton-label")
+    public WebElement checkboxTopHapNews;
+
     @FindBy(xpath = "//button[@type='submit']")
     public WebElement submitBtn;
 
@@ -57,6 +60,11 @@ public class ProfilePage extends MainPage {
 
     public void updateEmail(String email) {
         emailField.sendKeys(email);
+        submitBtn.click();
+    }
+
+    public void updateCheckboxTopHapNews(){
+        checkboxTopHapNews.click();
         submitBtn.click();
     }
 
