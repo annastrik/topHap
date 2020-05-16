@@ -10,11 +10,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tophap.TestHelper;
 import pages.base.MainPage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class MapPage extends MainPage {
 
@@ -127,6 +125,22 @@ public class MapPage extends MainPage {
         this.propertyStatusFilterMenu.click();
         getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
         this.activePropertyFilter.click();
+        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
+        getDriver().navigate().refresh();
+    }
+
+    private void applyPropertyStatusFilter(WebElement filterType) throws InterruptedException {
+        this.propertyStatusFilterMenu.click();
+        getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
+        filterType.click();
+        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
+        getDriver().navigate().refresh();
+    }
+
+    public void applyActivePropertyStatusFilter() throws InterruptedException {
+        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
+        applyPropertyStatusFilter(this.activePropertyFilter);
+        getDriver().navigate().refresh();
     }
 
     private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");
@@ -162,5 +176,11 @@ public class MapPage extends MainPage {
                     String.format("//span[text()='%s']", entry.getKey()))), this.moreContainerBtn);
             eachButtonsHoverOver.accept(getDriver().findElement(By.xpath(String.format("//div[text()='%s']", entry.getValue()))));
         }
+    }
+
+    public List<String> obtainSortedAddressesList(List<String> list) {
+        return list.stream().map(x -> x.replace("Apt", ""))
+                .map(x -> x.replace("Unit", "")).map(String::toUpperCase).sorted()
+                .collect(Collectors.toList());
     }
 }
