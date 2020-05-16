@@ -28,6 +28,10 @@ public class SearchSortFilterApiTest {
         return item.getJSONObject("_source").getJSONObject("address").getString("UnparsedAddress");
     }
 
+    public static String obtainZipCode(JSONObject item) {
+        return item.getJSONObject("_source").getJSONObject("address").getString("PostalCode");
+    }
+
     public static List<Integer> obtainSortedPricesList(List<String> list) {
         return list.stream().map(x -> x.replace(".00", ""))
                 .map(Integer::parseInt).sorted(Comparator.reverseOrder()).collect(Collectors.toList());

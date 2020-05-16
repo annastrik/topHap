@@ -12,7 +12,9 @@ import pages.MapPage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,5 +73,21 @@ public class SearchByZipCodeTest extends MultipleTest {
 
         assertEquals(searchResultsCountOnClient, searchResultsCountOnServer);
         assertEquals(searchResultsListOnClient, searchResultsListOnServer);
+    }
+
+    @Test
+    @Order(3)
+    void distinctZipCodeCountIsEqualOneAndMatchesSubmittedInSearch() throws IOException {
+
+        Set<String> distinctZipSet = new HashSet<>();
+
+        SearchSortFilterApiTest.forEachItemInApiResponse(BODY,
+                APIResponse -> {
+                    String zipCode = SearchSortFilterApiTest.obtainZipCode(APIResponse);
+                    distinctZipSet.add(zipCode);
+                });
+
+        assertTrue(distinctZipSet.size() == 1);
+        assertEquals(MapPage.ZIP_TEST, distinctZipSet.stream().findFirst().get());
     }
 }
