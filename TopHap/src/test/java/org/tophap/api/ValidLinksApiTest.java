@@ -15,8 +15,8 @@ public class ValidLinksApiTest {
     public static void forEachLinkAPIResponse(IntConsumer acceptElement, String Url) throws IOException {
         HttpGet request = new HttpGet(Url);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
-            System.out.println(response.getStatusLine().getStatusCode());
             acceptElement.accept(response.getStatusLine().getStatusCode());
         }
     }
 }
+
