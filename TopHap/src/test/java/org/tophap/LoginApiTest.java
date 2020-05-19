@@ -77,7 +77,7 @@ public class LoginApiTest extends MultipleTest {
     @Order(4)
     void testApiHelperLogin() throws IOException {
 
-        ApiHelper.login("qualitya2019+ta1@gmail.com", "TopHap");
-        assertTrue(idToken.length() > 0);
+        String token = ApiHelper.login("qualitya2019+ta1@gmail.com", "TopHap");
+        assertTrue(token.length() > 0);
     }
 }
