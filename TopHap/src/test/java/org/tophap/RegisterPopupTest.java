@@ -2,14 +2,14 @@ package org.tophap;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.tophap.runner.SingleTest;
-import pages.HomePage;
-import pages.ProfilePage;
-import pages.SignUpPage;
+import org.tophap.helpers.UserHelper;
+import org.tophap.runner.SingleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.SignUpPage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RegisterPopupTest extends SingleTest {
+class RegisterPopupTest extends SingleWebTest {
 
     @Disabled
     @Test

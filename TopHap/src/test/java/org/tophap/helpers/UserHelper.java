@@ -1,4 +1,4 @@
-package org.tophap;
+package org.tophap.helpers;
 
 public class UserHelper {
 

@@ -1,12 +1,12 @@
-package pages.base;
+package org.tophap.model.pages.base;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
-import org.tophap.TestHelper;
-import pages.ProfilePage;
+import org.tophap.helpers.TestHelper;
+import org.tophap.model.pages.ProfilePage;
 
 import java.util.List;
 import java.util.function.Consumer;

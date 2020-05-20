@@ -1,4 +1,4 @@
-package pages.base;
+package org.tophap.model.pages.base;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;

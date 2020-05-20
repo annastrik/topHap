@@ -3,14 +3,15 @@ package org.tophap;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.tophap.runner.MultipleTest;
-import pages.HomePage;
-import pages.LoginPage;
-import pages.ProfilePage;
+import org.tophap.helpers.UserHelper;
+import org.tophap.runner.MultipleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.LoginPage;
+import org.tophap.model.pages.ProfilePage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CheckTopHapNewsTest extends MultipleTest {
+public class CheckTopHapNewsTest extends MultipleWebTest {
 
     private ProfilePage profilePage;
 

@@ -3,15 +3,16 @@ package org.tophap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.tophap.runner.MultipleTest;
-import pages.HomePage;
-import pages.LoginPage;
-import pages.SignUpPage;
+import org.tophap.helpers.UserHelper;
+import org.tophap.runner.MultipleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.LoginPage;
+import org.tophap.model.pages.SignUpPage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LoginFunctionalityTest extends MultipleTest {
+public class LoginFunctionalityTest extends MultipleWebTest {
 
     private LoginPage loginPage;
     private HomePage homePage;

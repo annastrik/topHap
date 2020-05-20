@@ -1,10 +1,9 @@
-package pages;
+package org.tophap.model.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.tophap.TestHelper;
-import pages.base.MainPage;
+import org.tophap.model.pages.base.MainPage;
 
 public class HomePage extends MainPage {
 

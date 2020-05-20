@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.tophap.api.SearchSortFilterApiTest;
-import org.tophap.runner.MultipleTest;
-import pages.HomePage;
-import pages.MapPage;
+import org.tophap.model.api.SearchSortFilter;
+import org.tophap.runner.MultipleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.MapPage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,18 +15,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SortResultTest extends MultipleTest {
+public class SortResultTest extends MultipleWebTest {
 
     private static final By PRICE_LOCATOR = By.cssSelector(".th-price");
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.13936414365219,37.923036066930806],[-122.016019856348,37.98461413680798]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+    private static final String REQUEST_URL = "https://staging-api.tophap.com/properties/search";
+
+    private int searchResultsCountOnClient;
+    private List<Integer> searchResultsListOnClient = new ArrayList<>();
 
     private int getPriceFromText(String price) {
         return Integer.parseInt(price.replaceAll("[$,]", ""));
     }
-
-    private int searchResultsCountOnClient;
-    private List<Integer> searchResultsListOnClient = new ArrayList<>();
-    private List<Integer> searchResultsListOnServer = new ArrayList<>();
 
     @Test
     @Order(1)
@@ -79,16 +79,7 @@ public class SortResultTest extends MultipleTest {
     @Order(4)
     void returnedResultFromServerMatchesResultInClient() throws IOException {
 
-        List<String> searchResultsList = new ArrayList<>();
-
-        int searchResultsCountOnServer = SearchSortFilterApiTest.forEachItemInApiResponse(BODY,
-                APIResponse -> {
-                    String price = SearchSortFilterApiTest.obtainPrice(APIResponse);
-                    searchResultsList.add(price);
-                    searchResultsListOnServer = SearchSortFilterApiTest.obtainSortedPricesList(searchResultsList);
-                });
-
-        assertEquals(searchResultsCountOnClient, searchResultsCountOnServer);
+        List<Integer> searchResultsListOnServer = SearchSortFilter.getSearchItemsPriceList(BODY, REQUEST_URL);
         assertEquals(searchResultsListOnClient, searchResultsListOnServer);
     }
 }

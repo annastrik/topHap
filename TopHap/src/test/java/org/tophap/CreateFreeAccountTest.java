@@ -3,14 +3,17 @@ package org.tophap;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.tophap.runner.MultipleTest;
-import pages.*;
+import org.tophap.helpers.UserHelper;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.PricingPage;
+import org.tophap.model.pages.SignUpPage;
+import org.tophap.runner.MultipleWebTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class CreateFreeAccountTest extends MultipleTest {
+public class CreateFreeAccountTest extends MultipleWebTest {
 
     private PricingPage pricingPage;;
     private HomePage homePage;

@@ -1,4 +1,4 @@
-package org.tophap;
+package org.tophap.helpers;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

@@ -1,15 +1,16 @@
 package org.tophap;
 
-import pages.HomePage;
-import pages.LoginPage;
-import pages.ProfilePage;
+import org.tophap.helpers.UserHelper;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.LoginPage;
+import org.tophap.model.pages.ProfilePage;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.tophap.runner.MultipleTest;
+import org.tophap.runner.MultipleWebTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ChangeAccountInfoTest extends MultipleTest {
+public class ChangeAccountInfoTest extends MultipleWebTest {
 
     private ProfilePage profilePage;
 

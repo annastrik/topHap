@@ -1,4 +1,4 @@
-package org.tophap;
+package org.tophap.model.api;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-public class ApiHelper {
+public class Login {
 
     public static final String REQUEST_URL = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDsjeiJsU0dHfsaUVCv5pMehUmLyT26OZM";
     public static final String REQUEST_BODY_FORMAT = "{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}";

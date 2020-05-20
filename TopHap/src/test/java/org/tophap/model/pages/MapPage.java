@@ -1,4 +1,4 @@
-package pages;
+package org.tophap.model.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -7,8 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.tophap.TestHelper;
-import pages.base.MainPage;
+import org.tophap.helpers.TestHelper;
+import org.tophap.model.pages.base.MainPage;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -178,7 +178,7 @@ public class MapPage extends MainPage {
         }
     }
 
-    public List<String> obtainSortedAddressesList(List<String> list) {
+    public List<String> getSortedAddressesList(List<String> list) {
         return list.stream().map(x -> x.replace("Apt", ""))
                 .map(x -> x.replace("Unit", "")).map(String::toUpperCase).sorted()
                 .collect(Collectors.toList());

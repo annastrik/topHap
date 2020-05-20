@@ -3,16 +3,17 @@ package org.tophap;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.tophap.api.ValidLinksApiTest;
-import org.tophap.runner.MultipleTest;
-import pages.HomePage;
+import org.tophap.helpers.ApiHelper;
+import org.tophap.helpers.TestHelper;
+import org.tophap.runner.MultipleWebTest;
+import org.tophap.model.pages.HomePage;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FindPropertiesTest extends MultipleTest {
+public class FindPropertiesTest extends MultipleWebTest {
 
     private HomePage homePage;
 
@@ -47,8 +48,8 @@ public class FindPropertiesTest extends MultipleTest {
         final String URL_RECENTLY_SOLD = "https://next.tophap.com/map/N4IgZiBcoM4C4EM4FcZVAYwDYHsYFMB9AEyX3RAFsBLAOyhFpwHcBaARgE8B6YkAXwA0IAG4IsyfGkgBtEAGUcWPgF1+QkAAcK+WggBGWfH0hwATpOFYD+LAFE9h41HOWQGJTjMODRk2HECYTMEYmpUHycTV3xhD1wzBjCYTWtOAAUzagxyYNDw6XccZFo4ECsbLAYPErKNGBEXC3x+IA";
         final String NEW_CONSTRUCTION = "https://next.tophap.com/map/N4IgZiBcoJ4KYEMBOB9ARgVwJYBsAuUoAtlgHZQBMADAIwAcAvgwDQgAOhIcpCaOcAEyh4kGOKxy84OAKI8+g4aPEgAxgHsc6pHN78hkMAhwBnFUgQCsGE7oUGRY1hq1IoIKybaSYABSRYqnAgrBZWNu4aGKQEElI4kerRBCwgJgBuSmIMQA";
 
-        ValidLinksApiTest.forEachLinkAPIResponse(APIResponse -> assertEquals(HttpStatus.SC_OK, APIResponse), URL_ACTIVE_PROPERTIES);
-        ValidLinksApiTest.forEachLinkAPIResponse(APIResponse -> assertEquals(HttpStatus.SC_OK, APIResponse), URL_RECENTLY_SOLD);
-        ValidLinksApiTest.forEachLinkAPIResponse(APIResponse -> assertEquals(HttpStatus.SC_OK, APIResponse), NEW_CONSTRUCTION);
+        assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_ACTIVE_PROPERTIES));
+        assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_RECENTLY_SOLD));
+        assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(NEW_CONSTRUCTION));
     }
 }

@@ -1,4 +1,4 @@
-package org.tophap.api;
+package org.tophap.model.api;
 
 import org.apache.http.*;
 import org.apache.http.client.methods.CloseableHttpResponse;

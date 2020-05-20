@@ -4,32 +4,32 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.tophap.api.SearchSortFilterApiTest;
-import org.tophap.runner.MultipleTest;
-import pages.HomePage;
-import pages.LoginPage;
-import pages.MapPage;
+import org.tophap.helpers.UserHelper;
+import org.tophap.model.api.SearchSortFilter;
+import org.tophap.runner.MultipleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.LoginPage;
+import org.tophap.model.pages.MapPage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SearchByZipCodeTest extends MultipleTest {
+public class SearchByZipCodeTest extends MultipleWebTest {
 
     private static final By REGION_LOCATOR = By.cssSelector(".th-region");
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.16544265011063,37.92303606693025],[-122.04209836280647,37.98461413680742]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+    private static final String REQUEST_URL = "https://staging-api.tophap.com/properties/search";
+    private int searchResultsCountOnClient;
+    private List<String> searchResultsListOnClient = new ArrayList<>();
 
     private String getZipFromRegion(String region) {
         return region.substring(region.length() - 5);
     }
-
-    private int searchResultsCountOnClient;
-    private List<String> searchResultsListOnClient = new ArrayList<>();
-    private List<String> searchResultsListOnServer = new ArrayList<>();
 
     @Test
     @Order(1)
@@ -55,23 +55,17 @@ public class SearchByZipCodeTest extends MultipleTest {
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
-        searchResultsListOnClient = mapPage.obtainSortedAddressesList(searchResultsList);
+        searchResultsListOnClient = mapPage.getSortedAddressesList(searchResultsList);
     }
 
     @Test
     @Order(2)
     void returnedResultsListFromServerMatchesResultsInClient() throws IOException {
 
-        List<String> searchResultsList = new ArrayList<>();
-
-        int searchResultsCountOnServer = SearchSortFilterApiTest.forEachItemInApiResponse(BODY,
-                APIResponse -> {
-                    String address = SearchSortFilterApiTest.obtainAddress(APIResponse);
-                    searchResultsList.add(address);
-                    searchResultsListOnServer = SearchSortFilterApiTest.obtainSortedAddressesList(searchResultsList);
-                });
-
-        assertEquals(searchResultsCountOnClient, searchResultsCountOnServer);
+        List<String> searchResultsListOnServer = SearchSortFilter.getSearchItemsList(BODY, REQUEST_URL).stream()
+                .map(SearchSortFilter.SearchItem::getAddress)
+                .sorted()
+                .collect(Collectors.toList());
         assertEquals(searchResultsListOnClient, searchResultsListOnServer);
     }
 
@@ -79,15 +73,8 @@ public class SearchByZipCodeTest extends MultipleTest {
     @Order(3)
     void distinctZipCodeCountIsEqualOneAndMatchesSubmittedInSearch() throws IOException {
 
-        Set<String> distinctZipSet = new HashSet<>();
-
-        SearchSortFilterApiTest.forEachItemInApiResponse(BODY,
-                APIResponse -> {
-                    String zipCode = SearchSortFilterApiTest.obtainZipCode(APIResponse);
-                    distinctZipSet.add(zipCode);
-                });
-
-        assertTrue(distinctZipSet.size() == 1);
-        assertEquals(MapPage.ZIP_TEST, distinctZipSet.stream().findFirst().get());
+        Set<String> searchResultsSetOnServer = SearchSortFilter.getSearchItemsSet(BODY, REQUEST_URL);
+        assertEquals(1, searchResultsSetOnServer.size());
+        assertEquals(MapPage.ZIP_TEST, searchResultsSetOnServer.stream().findFirst().get());
     }
 }

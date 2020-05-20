@@ -1,13 +1,13 @@
 package org.tophap;
 
 import org.junit.jupiter.api.Test;
-import org.tophap.runner.SingleTest;
-import pages.HomePage;
-import pages.MapPage;
+import org.tophap.runner.SingleWebTest;
+import org.tophap.model.pages.HomePage;
+import org.tophap.model.pages.MapPage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HoverOverTest extends SingleTest {
+public class HoverOverTest extends SingleWebTest {
 
     @Test
     void hoverOverTest() throws InterruptedException {
