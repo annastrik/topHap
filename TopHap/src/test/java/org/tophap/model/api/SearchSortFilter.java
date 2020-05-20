@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 public class SearchSortFilter {
 
+    public static final String SEARCH_URL = "https://staging-api.tophap.com/properties/search";
+
     public static class SearchItem {
 
         private JSONObject item;
@@ -32,10 +34,10 @@ public class SearchSortFilter {
         }
     }
 
-    public static List<SearchItem> getSearchItemsList(String body, String url) throws IOException {
+    public static List<SearchItem> getSearchItemsList(String body) throws IOException {
 
         List<SearchItem> result = new ArrayList<>();
-        ApiHelper.doHttpRequest(url, body, response-> {
+        ApiHelper.doHttpRequest(SEARCH_URL, body, response-> {
             JSONArray items = null;
             try {
                 items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");
@@ -50,10 +52,10 @@ public class SearchSortFilter {
         return result;
     }
 
-    public static Set<String> getSearchItemsSet(String body, String url) throws IOException {
+    public static Set<String> getSearchItemsSet(String body) throws IOException {
 
-    Set<String> result = new HashSet<>();
-        ApiHelper.doHttpRequest(url, body, response-> {
+        Set<String> result = new HashSet<>();
+        ApiHelper.doHttpRequest(SEARCH_URL, body, response-> {
             JSONArray items = null;
             try {
                 items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");
@@ -68,8 +70,8 @@ public class SearchSortFilter {
         return result;
     }
 
-    public static List<Integer> getSearchItemsPriceList(String body, String url) throws IOException {
-        return getSearchItemsList(body, url).stream()
+    public static List<Integer> getSearchItemsPriceList(String body) throws IOException {
+        return getSearchItemsList(body).stream()
                 .map(SearchSortFilter.SearchItem::getPrice)
                 .map(x -> x.replace(".00", ""))
                 .map(Integer::parseInt)

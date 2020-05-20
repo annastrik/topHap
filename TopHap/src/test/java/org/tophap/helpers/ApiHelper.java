@@ -51,13 +51,6 @@ public class ApiHelper {
         return request;
     }
 
-    public static int getHttpRequestStatus(String url) throws IOException {
-        HttpGet request = new HttpGet(url);
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
-            return response.getStatusLine().getStatusCode();
-        }
-    }
-
     public static void doHttpRequest(String url, String postBody, Consumer<CloseableHttpResponse> response) throws IOException {
         doHttpRequest(createHttpPost(url, postBody), response);
     }
@@ -80,6 +73,14 @@ public class ApiHelper {
     public static void doHttpRequest(String url, String postBody, Consumer<CloseableHttpResponse> response, String token) throws IOException {
         HttpPost request = createHttpPost(url, postBody, token);
         doHttpRequest(request, response);
+    }
+
+    public static int getHttpRequestStatus(String url) throws IOException {
+        int[] status = {0};
+        doHttpRequest(url, element -> {
+            status[0] = element.getStatusLine().getStatusCode();
+        });
+        return status[0];
     }
 
     public static String getToken(String email, String password) throws IOException {

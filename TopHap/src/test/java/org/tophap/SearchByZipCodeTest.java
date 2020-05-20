@@ -23,8 +23,6 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     private static final By REGION_LOCATOR = By.cssSelector(".th-region");
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.16544265011063,37.92303606693025],[-122.04209836280647,37.98461413680742]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
-    private static final String REQUEST_URL = "https://staging-api.tophap.com/properties/search";
-    private int searchResultsCountOnClient;
     private List<String> searchResultsListOnClient = new ArrayList<>();
 
     private String getZipFromRegion(String region) {
@@ -46,7 +44,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
         mapPage.submitSearch(MapPage.ZIP_TEST);
         mapPage.applyActivePropertyStatusFilter();
 
-        searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
+        int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
                     WebElement currentElement = element.findElement(REGION_LOCATOR);
                     String zipCode = getZipFromRegion(currentElement.getText());
@@ -62,7 +60,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
     @Order(2)
     void returnedResultsListFromServerMatchesResultsInClient() throws IOException {
 
-        List<String> searchResultsListOnServer = SearchSortFilter.getSearchItemsList(BODY, REQUEST_URL).stream()
+        List<String> searchResultsListOnServer = SearchSortFilter.getSearchItemsList(BODY).stream()
                 .map(SearchSortFilter.SearchItem::getAddress)
                 .sorted()
                 .collect(Collectors.toList());
@@ -73,7 +71,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
     @Order(3)
     void distinctZipCodeCountIsEqualOneAndMatchesSubmittedInSearch() throws IOException {
 
-        Set<String> searchResultsSetOnServer = SearchSortFilter.getSearchItemsSet(BODY, REQUEST_URL);
+        Set<String> searchResultsSetOnServer = SearchSortFilter.getSearchItemsSet(BODY);
         assertEquals(1, searchResultsSetOnServer.size());
         assertEquals(MapPage.ZIP_TEST, searchResultsSetOnServer.stream().findFirst().get());
     }
