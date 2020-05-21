@@ -22,9 +22,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
 
         homePage = new HomePage(getDriver());
     }
-
-    @Order(1)
     @Test
+    @Order(1)
     void verifyLoginPage() {
 
         loginPage = homePage.openLogin();
@@ -32,8 +31,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
         assertEquals("Sign In", loginPage.title.getText());
     }
 
-    @Order(2)
     @Test
+    @Order(2)
     void redirectToSignUpPage(){
 
         loginPage = homePage.openLogin();
@@ -46,8 +45,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
         homePage.closeModalWindowButton.click();
     }
 
-    @Order(3)
     @Test
+    @Order(3)
     void redirectToForgotPasswordForm(){
 
         loginPage = homePage.openLogin();
@@ -62,8 +61,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
         homePage.closeModalWindowButton.click();
         }
 
-    @Order(4)
     @Test
+    @Order(4)
     void socialSignInButtonsEnabled() {
 
         loginPage = homePage.openLogin();
@@ -72,8 +71,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
         assertTrue(loginPage.facebookButton.isEnabled());
     }
 
-    @Order(5)
     @Test
+    @Order(5)
     void loginWithValidCredentials() {
 
         loginPage = homePage.openLogin();
@@ -83,8 +82,8 @@ public class LoginFunctionalityTest extends MultipleWebTest {
         loginPage.openUserProfile();
     }
 
-    @Order(6)
     @Test
+    @Order(6)
     void logout() { loginPage.logout();}
 }
 
