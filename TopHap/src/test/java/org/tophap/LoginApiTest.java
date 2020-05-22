@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.tophap.helpers.ApiHelper;
 import org.tophap.runner.MultipleApiTest;
+
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,7 @@ public class LoginApiTest extends MultipleApiTest {
     void tokenValidation() throws IOException {
 
         idToken = ApiHelper.getToken("qualitya2019+ta1@gmail.com", "TopHap");
+        System.out.println(idToken);
         assertNotEquals("", idToken);
     }
 
@@ -37,9 +39,9 @@ public class LoginApiTest extends MultipleApiTest {
     void enterPaymentsPageWithToken() throws IOException {
 
         ApiHelper.doHttpRequest("https://staging-api.tophap.com/users/payment/customers",
-                element -> {
-                    assertEquals(HttpStatus.SC_OK, element.getStatusLine().getStatusCode());
-                    assertNotNull(element.getEntity(), "response is null");
+                response -> {
+                    assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+                    assertNotNull(response.getEntity(), "response is null");
                 },
                 idToken);
     }

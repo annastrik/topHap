@@ -37,17 +37,18 @@ public class SearchSortFilter {
     public static List<SearchItem> getSearchItemsList(String body) throws IOException {
 
         List<SearchItem> result = new ArrayList<>();
-        ApiHelper.doHttpRequest(SEARCH_URL, body, response-> {
-            JSONArray items = null;
-            try {
-                items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < items.length(); i++) {
-                result.add(new SearchItem(items.getJSONObject(i)));
-            }
-        });
+        ApiHelper.doHttpRequest(SEARCH_URL, body,
+                response -> {
+                    JSONArray items = null;
+                    try {
+                        items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    for (int i = 0; i < items.length(); i++) {
+                        result.add(new SearchItem(items.getJSONObject(i)));
+                    }
+                });
 
         return result;
     }
@@ -55,7 +56,7 @@ public class SearchSortFilter {
     public static Set<String> getSearchItemsSet(String body) throws IOException {
 
         Set<String> result = new HashSet<>();
-        ApiHelper.doHttpRequest(SEARCH_URL, body, response-> {
+        ApiHelper.doHttpRequest(SEARCH_URL, body, response -> {
             JSONArray items = null;
             try {
                 items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");

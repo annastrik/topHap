@@ -51,18 +51,18 @@ public class ApiHelper {
         return request;
     }
 
-    public static void doHttpRequest(String url, String postBody, Consumer<CloseableHttpResponse> response) throws IOException {
-        doHttpRequest(createHttpPost(url, postBody), response);
+    private static void doHttpRequest(HttpUriRequest request, Consumer<CloseableHttpResponse> response) throws IOException {
+        try (CloseableHttpResponse httpResponse = httpClient.execute(request)) {
+            response.accept(httpResponse);
+        }
     }
 
     public static void doHttpRequest(String url, Consumer<CloseableHttpResponse> response) throws IOException {
         doHttpRequest(createHttpGet(url), response);
     }
 
-    private static void doHttpRequest(HttpUriRequest request, Consumer<CloseableHttpResponse> response) throws IOException {
-        try (CloseableHttpResponse httpResponse = httpClient.execute(request)) {
-            response.accept(httpResponse);
-        }
+    public static void doHttpRequest(String url, String postBody, Consumer<CloseableHttpResponse> response) throws IOException {
+        doHttpRequest(createHttpPost(url, postBody), response);
     }
 
     public static void doHttpRequest(String url, Consumer<CloseableHttpResponse> response, String token) throws IOException {
@@ -77,8 +77,8 @@ public class ApiHelper {
 
     public static int getHttpRequestStatus(String url) throws IOException {
         int[] status = {0};
-        doHttpRequest(url, element -> {
-            status[0] = element.getStatusLine().getStatusCode();
+        doHttpRequest(url, response -> {
+            status[0] = response.getStatusLine().getStatusCode();
         });
         return status[0];
     }
@@ -87,9 +87,9 @@ public class ApiHelper {
         String[] token = {""};
         doHttpRequest(AUTHORIZATION_URL,
                 getLoginBody(email, password),
-                element -> {
+                response -> {
                     try {
-                        token[0] = new JSONObject(EntityUtils.toString(element.getEntity())).getString("idToken");
+                        token[0] = new JSONObject(EntityUtils.toString(response.getEntity())).getString("idToken");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

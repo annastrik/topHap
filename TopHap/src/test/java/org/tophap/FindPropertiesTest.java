@@ -44,9 +44,9 @@ public class FindPropertiesTest extends MultipleWebTest {
     @Test
     void SubMenuLinksHaveAPIResponse200() throws IOException {
 
-        final String URL_ACTIVE_PROPERTIES = "https://next.tophap.com/map/N4IgtiBcoMZQ2gWgIwCZUDoDsyCcBWADlz2OS1UIBoBmLbdANlXKJsbMYF0qQAvKIQxosABlQdcBXKnyjGvAA5RRvAEYr1AewRI0AFgyjydRqP2FU+xvpq16yUbnb594vGho896DDXyoNIT4uLZOJPq0QjQ0ooT6skQk+DSoXFwAvrwAzgBuUAAuAE4ArgCmGUA";
-        final String URL_RECENTLY_SOLD = "https://next.tophap.com/map/N4IgZiBcoM4C4EM4FcZVAYwDYHsYFMB9AEyX3RAFsBLAOyhFpwHcBaARgE8B6YkAXwA0IAG4IsyfGkgBtEAGUcWPgF1+QkAAcK+WggBGWfH0hwATpOFYD+LAFE9h41HOWQGJTjMODRk2HECYTMEYmpUHycTV3xhD1wzBjCYTWtOAAUzagxyYNDw6XccZFo4ECsbLAYPErKNGBEXC3x+IA";
-        final String NEW_CONSTRUCTION = "https://next.tophap.com/map/N4IgZiBcoJ4KYEMBOB9ARgVwJYBsAuUoAtlgHZQBMADAIwAcAvgwDQgAOhIcpCaOcAEyh4kGOKxy84OAKI8+g4aPEgAxgHsc6pHN78hkMAhwBnFUgQCsGE7oUGRY1hq1IoIKybaSYABSRYqnAgrBZWNu4aGKQEElI4kerRBCwgJgBuSmIMQA";
+        final String URL_ACTIVE_PROPERTIES = "https://next.tophap.com/_next/static/chunks/71d48f31.4324a6d0469f313c4195.js";
+        final String URL_RECENTLY_SOLD = "https://next.tophap.com/_next/static/chunks/1efffb724918bcf682686c208e9bde6bdffb13a7.85b5c6efe524a0e64b49.js";
+        final String NEW_CONSTRUCTION = "https://next.tophap.com/_next/static/chunks/37455560100892d6452a891e5ff5d80c03e94cc3.243be9aa4f8f7be76535.js";
 
         assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_ACTIVE_PROPERTIES));
         assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_RECENTLY_SOLD));
