@@ -32,6 +32,10 @@ public class SearchSortFilter {
         public String getZipCode() {
             return item.getJSONObject("_source").getJSONObject("address").getString("PostalCode");
         }
+
+        public String getStatus() {
+            return item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("TophapStatus");
+        }
     }
 
     public static List<SearchItem> getSearchItemsList(String body) throws IOException {
@@ -49,24 +53,6 @@ public class SearchSortFilter {
                         result.add(new SearchItem(items.getJSONObject(i)));
                     }
                 });
-
-        return result;
-    }
-
-    public static Set<String> getSearchItemsSet(String body) throws IOException {
-
-        Set<String> result = new HashSet<>();
-        ApiHelper.doHttpRequest(SEARCH_URL, body, response -> {
-            JSONArray items = null;
-            try {
-                items = new JSONObject(EntityUtils.toString(response.getEntity())).getJSONArray("items");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < items.length(); i++) {
-                result.add(new SearchItem(items.getJSONObject(i)).getZipCode());
-            }
-        });
 
         return result;
     }

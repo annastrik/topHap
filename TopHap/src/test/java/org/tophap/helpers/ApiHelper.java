@@ -35,7 +35,7 @@ public class ApiHelper {
         return request;
     }
 
-    private static void addToken(AbstractHttpMessage abstractHttpMessage, String token){
+    private static void addToken(AbstractHttpMessage abstractHttpMessage, String token) {
         abstractHttpMessage.addHeader("authorization", token);
     }
 

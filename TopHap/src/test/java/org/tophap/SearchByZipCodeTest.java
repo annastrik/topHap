@@ -14,7 +14,6 @@ import org.tophap.model.pages.MapPage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,10 +68,12 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     @Test
     @Order(3)
-    void distinctZipCodeCountIsEqualOneAndMatchesSubmittedInSearch() throws IOException {
+    void allItemsReturnedFromServerHaveSubmittedZipCode() throws IOException {
 
-        Set<String> searchResultsSetOnServer = SearchSortFilter.getSearchItemsSet(BODY);
-        assertEquals(1, searchResultsSetOnServer.size());
-        assertEquals(MapPage.ZIP_TEST, searchResultsSetOnServer.stream().findFirst().get());
+        List<String> itemsWithWrongZipCode = SearchSortFilter.getSearchItemsList(BODY).stream()
+                .map(SearchSortFilter.SearchItem::getZipCode)
+                .filter(x -> !MapPage.ZIP_TEST.equals(x))
+                .collect(Collectors.toList());
+        assertEquals(0, itemsWithWrongZipCode.size());
     }
 }
