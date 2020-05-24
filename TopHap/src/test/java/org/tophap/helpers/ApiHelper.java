@@ -8,8 +8,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.AbstractHttpMessage;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,8 +16,6 @@ import java.util.function.Consumer;
 public class ApiHelper {
 
     private static CloseableHttpClient httpClient = HttpClients.createDefault();
-
-    public static final String AUTHORIZATION_URL = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDsjeiJsU0dHfsaUVCv5pMehUmLyT26OZM";
 
     public static String getLoginBody(String email, String password) {
         return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}", email, password);
@@ -81,19 +77,5 @@ public class ApiHelper {
             status[0] = response.getStatusLine().getStatusCode();
         });
         return status[0];
-    }
-
-    public static String getToken(String email, String password) throws IOException {
-        String[] token = {""};
-        doHttpRequest(AUTHORIZATION_URL,
-                getLoginBody(email, password),
-                response -> {
-                    try {
-                        token[0] = new JSONObject(EntityUtils.toString(response.getEntity())).getString("idToken");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-        return token[0];
     }
 }

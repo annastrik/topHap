@@ -4,6 +4,7 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.tophap.helpers.ApiHelper;
+import org.tophap.model.api.Login;
 import org.tophap.runner.MultipleApiTest;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class LoginApiTest extends MultipleApiTest {
     @Order(1)
     void loginFailed() throws IOException {
 
-        ApiHelper.doHttpRequest(ApiHelper.AUTHORIZATION_URL,
+        ApiHelper.doHttpRequest(Login.AUTHORIZATION_URL,
                 ApiHelper.getLoginBody("qweqweqwe@gmail.com", "asdasd"),
                 element -> {
                     assertEquals(HttpStatus.SC_BAD_REQUEST, element.getStatusLine().getStatusCode());
@@ -29,8 +30,7 @@ public class LoginApiTest extends MultipleApiTest {
     @Order(2)
     void tokenValidation() throws IOException {
 
-        idToken = ApiHelper.getToken("qualitya2019+ta1@gmail.com", "TopHap");
-        System.out.println(idToken);
+        idToken = Login.getToken("qualitya2019+ta1@gmail.com", "TopHap");
         assertNotEquals("", idToken);
     }
 
