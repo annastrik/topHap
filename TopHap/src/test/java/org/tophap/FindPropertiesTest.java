@@ -1,6 +1,7 @@
 package org.tophap;
 
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.tophap.helpers.ApiHelper;
@@ -40,6 +41,7 @@ public class FindPropertiesTest extends MultipleWebTest {
         assertTrue(TestHelper.isClickable(getDriver(), homePage.newConstructionSubMenuItem));
     }
 
+    @Disabled
     @Order(3)
     @Test
     void SubMenuLinksHaveAPIResponse200() throws IOException {
