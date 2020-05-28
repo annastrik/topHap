@@ -33,6 +33,10 @@ public class SearchSortFilter {
             return item.getJSONObject("_source").getJSONObject("address").getString("PostalCode");
         }
 
+        public String getCity() {
+            return item.getJSONObject("_source").getJSONObject("address").getString("City");
+        }
+
         public String getStatus() {
             return item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("TophapStatus");
         }

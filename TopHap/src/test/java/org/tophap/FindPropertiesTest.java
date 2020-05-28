@@ -41,14 +41,14 @@ public class FindPropertiesTest extends MultipleWebTest {
         assertTrue(TestHelper.isClickable(getDriver(), homePage.newConstructionSubMenuItem));
     }
 
-    @Disabled
+   
     @Order(3)
     @Test
     void SubMenuLinksHaveAPIResponse200() throws IOException {
 
-        final String URL_ACTIVE_PROPERTIES = "https://next.tophap.com/_next/static/chunks/71d48f31.3e7738b9463bcb7b11eb.js";
-        final String URL_RECENTLY_SOLD = "https://next.tophap.com/_next/static/chunks/a0aeb5bc847f55bf5affb6d1f5886e2c395e19ab.d5494e58cac2c8a01382.js";
-        final String NEW_CONSTRUCTION = "https://next.tophap.com/_next/static/chunks/38a4c9867534eec619f7da5c3419dd2db550cc40.905eebe5af49e9ade33c.js";
+        final String URL_ACTIVE_PROPERTIES = "https://next.tophap.com/_next/static/chunks/71d48f31.4324a6d0469f313c4195.js";
+        final String URL_RECENTLY_SOLD = "https://next.tophap.com/_next/static/chunks/15e50bb8612abbbfca58efdc722e56c77ddb558d.e2ff4eb228a0f50bebf4.js";
+        final String NEW_CONSTRUCTION = "https://next.tophap.com/_next/static/chunks/cde04e425d83429ec8aaab3c9e62cf903f5f92f8.01ba0e7b35c7e2c9cd95.js";
 
         assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_ACTIVE_PROPERTIES));
         assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(URL_RECENTLY_SOLD));

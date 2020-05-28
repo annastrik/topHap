@@ -114,6 +114,7 @@ public class MapPage extends MainPage {
     }
 
     public static final String ZIP_TEST = "94523";
+    public static final String CITY_TEST = "Pleasant Hill";
 
     private void submitSearchApplySortingAndFilters(WebElement orderAtoZorZtoA) throws InterruptedException {
         this.clearOldSearchAndFilterRecords();
