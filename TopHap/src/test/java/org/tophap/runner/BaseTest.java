@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 class BaseTest {
 
-    BaseTest() throws WrongAssignableClass {
+    BaseTest() {
         for (Method method : this.getClass().getDeclaredMethods()){
             validateMethodAnnotations(method);
         }
