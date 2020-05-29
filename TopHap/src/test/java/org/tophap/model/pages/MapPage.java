@@ -99,8 +99,8 @@ public class MapPage extends MainPage {
         }
     }
 
-    public void submitSearch(String postalCode) throws InterruptedException {
-        this.searchInputField.sendKeys(postalCode);
+    public void submitSearch(String searchCriteria) throws InterruptedException {
+        this.searchInputField.sendKeys(searchCriteria);
         Thread.sleep(2000);
         this.searchBtn.click();
     }
@@ -126,22 +126,16 @@ public class MapPage extends MainPage {
         this.propertyStatusFilterMenu.click();
         getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
         this.activePropertyFilter.click();
-        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
-        getDriver().navigate().refresh();
     }
 
     private void applyPropertyStatusFilter(WebElement filterType) throws InterruptedException {
         this.propertyStatusFilterMenu.click();
         getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
         filterType.click();
-        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
-        getDriver().navigate().refresh();
     }
 
     public void applyActivePropertyStatusFilter() throws InterruptedException {
-        //TODO refresh to be removed when bug is fixed: https://techacademeproject.atlassian.net/browse/THBUGS-29
         applyPropertyStatusFilter(this.activePropertyFilter);
-        getDriver().navigate().refresh();
     }
 
     private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");

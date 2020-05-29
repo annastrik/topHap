@@ -62,9 +62,3 @@ public class SearchByCityTest extends MultipleWebTest {
         assertEquals(0, itemsWithWrongCity.size());
     }
 }
-
-
-
-
-
-
