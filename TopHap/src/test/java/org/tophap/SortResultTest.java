@@ -11,17 +11,21 @@ import org.tophap.model.pages.MapPage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SortResultTest extends MultipleWebTest {
 
     private static final By PRICE_LOCATOR = By.cssSelector(".th-price");
+
+    private static final String ZIP_CODE = "94523";
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.13936414365219,37.923036066930806],[-122.016019856348,37.98461413680798]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
 
-    private int searchResultsCountOnClient;
-    private List<Integer> searchResultsListOnClient = new ArrayList<>();
+    private List<Integer> searchResultsListAZ = new ArrayList<>();
+    private List<Integer> searchResultsListZA = new ArrayList<>();
 
     private int getPriceFromText(String price) {
         return Integer.parseInt(price.replaceAll("[$,]", ""));
@@ -39,7 +43,7 @@ public class SortResultTest extends MultipleWebTest {
     void sortAZPriceTest() throws InterruptedException {
 
         MapPage mapPage = new MapPage(getDriver());
-        mapPage.submitSearchApplySortingAndFiltersAZ();
+        mapPage.submitSearchApplySortingAndFiltersAZ(ZIP_CODE);
 
         int[] prevPrice = {Integer.MIN_VALUE};
         int count = mapPage.forEachItemInSearchResult(
@@ -48,6 +52,8 @@ public class SortResultTest extends MultipleWebTest {
                     int currentPrice = getPriceFromText(currentElement.getText());
                     assertTrue(prevPrice[0] <= currentPrice);
                     prevPrice[0] = currentPrice;
+
+                    searchResultsListAZ.add(currentPrice);
                 });
 
         assertTrue(count > 0, "No items in search results");
@@ -58,20 +64,21 @@ public class SortResultTest extends MultipleWebTest {
     void sortZAPriceTest() throws InterruptedException {
 
         MapPage mapPage = new MapPage(getDriver());
-        mapPage.submitSearchApplySortingAndFiltersZA();
+        mapPage.submitSearchApplySortingAndFiltersZA(ZIP_CODE);
 
         int[] prevPrice = {Integer.MAX_VALUE};
 
-        searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
+        int count = mapPage.forEachItemInSearchResult(
                 element -> {
                     WebElement currentElement = element.findElement(PRICE_LOCATOR);
                     int currentPrice = getPriceFromText(currentElement.getText());
                     assertTrue(prevPrice[0] >= currentPrice);
                     prevPrice[0] = currentPrice;
-                    searchResultsListOnClient.add(currentPrice);
+
+                    searchResultsListZA.add(currentPrice);
                 });
 
-        assertTrue(searchResultsCountOnClient > 0, "No items in search results");
+        assertTrue(count > 0, "No items in search results");
     }
 
     @Test
@@ -79,6 +86,11 @@ public class SortResultTest extends MultipleWebTest {
     void returnedResultFromServerMatchesResultInClient() throws IOException {
 
         List<Integer> searchResultsListOnServer = SearchSortFilter.getSearchItemsPriceList(BODY);
-        assertEquals(searchResultsListOnClient, searchResultsListOnServer);
+
+        List<Integer> searchResultsListOnServerAZ = searchResultsListOnServer.stream().sorted().collect(Collectors.toList());
+        List<Integer> searchResultsListOnServerZA = searchResultsListOnServer.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+
+        assertEquals(searchResultsListAZ, searchResultsListOnServerAZ);
+        assertEquals(searchResultsListZA, searchResultsListOnServerZA);
     }
 }

@@ -19,8 +19,13 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SearchByCityTest extends MultipleWebTest {
+
     private static final By REGION_LOCATOR = By.cssSelector(".th-region");
+
+    public static final String CITY_NAME = "Pleasant Hill";
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.17327731067944,37.91763649537775],[-122.04624234304181,37.98966282341976]],\"zones\":[\"00040657764\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+
+    private List<SearchSortFilter.SearchItem> searchItemList = new ArrayList<>();
 
     private String getCityFromRegion(String region) {
         return region.substring(0, region.length() - 10);
@@ -30,21 +35,22 @@ public class SearchByCityTest extends MultipleWebTest {
     @Order(1)
     void searchByCity() throws InterruptedException {
 
-        List<String> searchResultsList = new ArrayList<>();
-
         HomePage homePage = new HomePage(getDriver());
         LoginPage loginPage = homePage.openLogin();
         loginPage.login(UserHelper.EMAIL, UserHelper.PASSWORD);
         homePage.closeEmailConfirmationFailureMsg();
         MapPage mapPage = homePage.tryForFreeStart();
-        mapPage.submitSearch(MapPage.CITY_TEST);
+        mapPage.submitSearch(CITY_NAME);
         mapPage.applyActivePropertyStatusFilter();
 
         int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
                     WebElement currentElement = element.findElement(REGION_LOCATOR);
                     String city = getCityFromRegion(currentElement.getText());
-                    assertEquals(MapPage.CITY_TEST, city);
+                    assertEquals(CITY_NAME, city);
+
+                    // todo доделать!
+                    //searchItemList.add(new SearchSortFilter.SearchItemPOJO("1", "1", "1", city, "1"));
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
@@ -55,10 +61,15 @@ public class SearchByCityTest extends MultipleWebTest {
     @Order(2)
     void allItemsReturnedFromServerHaveSubmittedCity() throws IOException {
 
+        final String CITY_NAME_UPPER_CASE = CITY_NAME.toUpperCase();
+
         List<String> itemsWithWrongCity = SearchSortFilter.getSearchItemsList(BODY).stream()
                 .map(SearchSortFilter.SearchItem::getCity)
-                .filter(x -> !MapPage.CITY_TEST.toUpperCase().equals(x))
+                .filter(x -> !CITY_NAME_UPPER_CASE.equals(x))
                 .collect(Collectors.toList());
         assertEquals(0, itemsWithWrongCity.size());
+
+        // todo доделать!
+        //assertEquals(searchItemList, <list from SearchSortFilter.getSearchItemsList>);
     }
 }

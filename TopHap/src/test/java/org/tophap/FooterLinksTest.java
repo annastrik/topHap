@@ -28,17 +28,4 @@ public class FooterLinksTest extends MultipleWebTest {
             assertTrue(TestHelper.isClickable(getDriver(), footerLink));
         });
     }
-
-    @Order(2)
-    @Test
-    void FooterLinksHaveAPIResponse200() throws IOException {
-
-        final List<WebElement> footerLinks = getDriver().findElements(By.cssSelector(".th-link"));
-
-        for (WebElement footerLink : footerLinks) {
-            if (!("Chat with Us".equals(footerLink.getText()) || "hello@tophap.com".equals(footerLink.getText()))) {
-                assertEquals(HttpStatus.SC_OK, ApiHelper.getHttpRequestStatus(footerLink.getAttribute("href")));
-            }
-        }
-    }
 }

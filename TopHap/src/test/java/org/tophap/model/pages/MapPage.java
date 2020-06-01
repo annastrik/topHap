@@ -105,20 +105,17 @@ public class MapPage extends MainPage {
         this.searchBtn.click();
     }
 
-    public void submitSearchApplySortingAndFiltersAZ() throws InterruptedException {
-        submitSearchApplySortingAndFilters(this.sortAZBtn);
+    public void submitSearchApplySortingAndFiltersAZ(String zipCode) throws InterruptedException {
+        submitSearchApplySortingAndFilters(this.sortAZBtn, zipCode);
     }
 
-    public void submitSearchApplySortingAndFiltersZA() throws InterruptedException {
-        submitSearchApplySortingAndFilters(this.sortZABtn);
+    public void submitSearchApplySortingAndFiltersZA(String zipCode) throws InterruptedException {
+        submitSearchApplySortingAndFilters(this.sortZABtn, zipCode);
     }
 
-    public static final String ZIP_TEST = "94523";
-    public static final String CITY_TEST = "Pleasant Hill";
-
-    private void submitSearchApplySortingAndFilters(WebElement orderAtoZorZtoA) throws InterruptedException {
+    private void submitSearchApplySortingAndFilters(WebElement orderAtoZorZtoA, String zipCode) throws InterruptedException {
         this.clearOldSearchAndFilterRecords();
-        this.submitSearch(ZIP_TEST);
+        this.submitSearch(zipCode);
         getWait10().until(ExpectedConditions.visibilityOf(this.searchResultsMenu));
         this.sortMenu.click();
         orderAtoZorZtoA.click();

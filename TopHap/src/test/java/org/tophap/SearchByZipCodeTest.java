@@ -1,6 +1,5 @@
 package org.tophap;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -22,7 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SearchByZipCodeTest extends MultipleWebTest {
 
     private static final By REGION_LOCATOR = By.cssSelector(".th-region");
+
+    private static final String ZIP_CODE = "94523";
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.16544265011063,37.92303606693025],[-122.04209836280647,37.98461413680742]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+
     private List<String> searchResultsListOnClient = new ArrayList<>();
 
     private String getZipFromRegion(String region) {
@@ -41,14 +43,14 @@ public class SearchByZipCodeTest extends MultipleWebTest {
         homePage.closeEmailConfirmationFailureMsg();
 
         MapPage mapPage = homePage.tryForFreeStart();
-        mapPage.submitSearch(MapPage.ZIP_TEST);
+        mapPage.submitSearch(ZIP_CODE);
         mapPage.applyActivePropertyStatusFilter();
 
         int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
                     WebElement currentElement = element.findElement(REGION_LOCATOR);
                     String zipCode = getZipFromRegion(currentElement.getText());
-                    assertEquals(MapPage.ZIP_TEST, zipCode);
+                    assertEquals(ZIP_CODE, zipCode);
                     searchResultsList.add(element.findElement(By.cssSelector(".th-address")).getText());
                 });
 
@@ -73,7 +75,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
         List<String> itemsWithWrongZipCode = SearchSortFilter.getSearchItemsList(BODY).stream()
                 .map(SearchSortFilter.SearchItem::getZipCode)
-                .filter(x -> !MapPage.ZIP_TEST.equals(x))
+                .filter(x -> !ZIP_CODE.equals(x))
                 .collect(Collectors.toList());
         assertEquals(0, itemsWithWrongZipCode.size());
     }
