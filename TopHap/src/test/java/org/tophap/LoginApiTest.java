@@ -21,7 +21,7 @@ public class LoginApiTest extends MultipleApiTest {
     void loginFailed() throws IOException {
 
         ApiHelper.doHttpRequest(Login.AUTHORIZATION_URL,
-                ApiHelper.getLoginBody("qweqweqwe@gmail.com", "asdasd"),
+                Login.getLoginBody("qweqweqwe@gmail.com", "asdasd"),
                 element -> {
                     assertEquals(HttpStatus.SC_BAD_REQUEST, element.getStatusLine().getStatusCode());
                 });

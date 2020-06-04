@@ -10,10 +10,14 @@ public class Login {
 
     public static final String AUTHORIZATION_URL = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDsjeiJsU0dHfsaUVCv5pMehUmLyT26OZM";
 
+    public static String getLoginBody(String email, String password) {
+        return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}", email, password);
+    }
+
     public static String getToken(String email, String password) throws IOException {
         String[] token = {""};
         ApiHelper.doHttpRequest(AUTHORIZATION_URL,
-                ApiHelper.getLoginBody(email, password),
+                getLoginBody(email, password),
                 response -> {
                     try {
                         token[0] = new JSONObject(EntityUtils.toString(response.getEntity())).getString("idToken");

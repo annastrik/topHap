@@ -7,8 +7,6 @@ import org.tophap.model.pages.base.MainPage;
 
 public class ProfilePage extends MainPage {
 
-    private static final String URL = "https://next.tophap.com/settings/profile";
-
     @FindBy(css = ".th-button.th-avatar-wrapper")
     public WebElement avatarPhoto;
 

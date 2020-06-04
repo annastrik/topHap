@@ -17,10 +17,6 @@ public class ApiHelper {
 
     private static CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    public static String getLoginBody(String email, String password) {
-        return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}", email, password);
-    }
-
     private static HttpGet createHttpGet(String url) {
         return new HttpGet(url);
     }

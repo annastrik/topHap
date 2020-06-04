@@ -2,7 +2,6 @@ package org.tophap;
 
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.tophap.helpers.UserHelper;
 import org.tophap.model.api.SearchSortFilter;
@@ -19,8 +18,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SearchByCityTest extends MultipleWebTest {
-
-    private static final By REGION_LOCATOR = By.cssSelector(".th-region");
 
     public static final String CITY_NAME = "Pleasant Hill";
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.17327731067944,37.91763649537775],[-122.04624234304181,37.98966282341976]],\"zones\":[\"00040657764\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
@@ -45,8 +42,8 @@ public class SearchByCityTest extends MultipleWebTest {
 
         int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
-                    WebElement currentElement = element.findElement(REGION_LOCATOR);
-                    String city = getCityFromRegion(currentElement.getText());
+                    WebElement region = MapPage.getRegionFromSearchItemResult(element);
+                    String city = getCityFromRegion(region.getText());
                     assertEquals(CITY_NAME, city);
 
                     // todo доделать!

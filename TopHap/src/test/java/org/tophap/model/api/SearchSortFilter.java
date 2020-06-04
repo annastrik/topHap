@@ -15,7 +15,7 @@ public class SearchSortFilter {
 
     public static abstract class SearchItem {
 
-        public abstract String getPrice();
+        public abstract int getPrice();
         public abstract String getAddress();
         public abstract String getZipCode();
         public abstract String getCity();
@@ -38,13 +38,13 @@ public class SearchSortFilter {
 
     public static class SearchItemPOJO extends SearchItem {
 
-        public String price;
+        public int price;
         public String address;
         public String zipCode;
         public String city;
         public String status;
 
-        public SearchItemPOJO(String price, String address, String zipCode, String city, String status) {
+        public SearchItemPOJO(int price, String address, String zipCode, String city, String status) {
             this.price = price;
             this.address = address;
             this.zipCode = zipCode;
@@ -53,7 +53,7 @@ public class SearchSortFilter {
         }
 
         @Override
-        public String getPrice() {
+        public int getPrice() {
             return price;
         }
 
@@ -87,8 +87,8 @@ public class SearchSortFilter {
         }
 
         @Override
-        public String getPrice() {
-            return item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("ListAmount");
+        public int getPrice() {
+            return Integer.parseInt(item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("ListAmount").replace(".00", ""));
         }
 
         @Override
@@ -110,6 +110,10 @@ public class SearchSortFilter {
         public String getStatus() {
             return item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("TophapStatus");
         }
+    }
+
+    public static String getSearchBodyByStatus(String status) {
+        return String.format("{\"size\":30,\"sort\":[{\"option\":\"status_timestamp\",\"dir\":\"desc\"}],\"filters\":{\"bounds\":[[-123.43697048056796,37.34582735413538],[-122.0022079172666,38.0975091572424]],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"close_date\":{\"min\":\"now-1y/d\"},\"values\":[\"%s\"]},\"stories\":{},\"year_built\":{}}}}", status);
     }
 
     public static List<SearchItem> getSearchItemsList(String body) throws IOException {
@@ -134,8 +138,6 @@ public class SearchSortFilter {
     public static List<Integer> getSearchItemsPriceList(String body) throws IOException {
         return getSearchItemsList(body).stream()
                 .map(SearchItem::getPrice)
-                .map(x -> x.replace(".00", ""))
-                .map(Integer::parseInt)
                 .collect(Collectors.toList());
     }
 }

@@ -16,18 +16,18 @@ import java.util.stream.Collectors;
 
 public class MapPage extends MainPage {
 
+    public static final By REGION_LOCATOR = By.cssSelector(".th-region");
+    public static final By ADDRESS_LOCATOR = By.cssSelector(".th-address");
+    public static final By PRICE_LOCATOR = By.cssSelector(".th-price");
+    public static final By STATUS_LOCATOR = By.cssSelector(".th-status-label");
+
     @FindBy(id = "th-geo-input")
     public WebElement searchInputField;
 
     @FindBys({
             @FindBy(className = "th-clear-button")
     })
-    public List<WebElement> clearSeachBtns;
-
-    @FindBys({
-            @FindBy(className = "th-clear-icon")
-    })
-    public List<WebElement> clearFilterBtns;
+    public List<WebElement> clearSearchFilterBtns;
 
     @FindBy(className = "th-search-button")
     public WebElement searchBtn;
@@ -82,20 +82,11 @@ public class MapPage extends MainPage {
         super(driver);
     }
 
-    public void clearSearchField() {
-        clearSeachBtns.get(0).click();
-    }
-
-    public void clearPropertyStatusFilter() {
-        clearFilterBtns.get(0).click();
-    }
-
     public void clearOldSearchAndFilterRecords() {
-        if (this.clearSeachBtns.size() > 0) {
-            this.clearSearchField();
-        }
-        if (this.clearFilterBtns.size() > 0) {
-            this.clearPropertyStatusFilter();
+        if (this.clearSearchFilterBtns.size() > 0) {
+            for (WebElement clearSearchFilterBtn : clearSearchFilterBtns) {
+                clearSearchFilterBtn.click();
+            }
         }
     }
 
@@ -174,5 +165,13 @@ public class MapPage extends MainPage {
         return list.stream().map(x -> x.replace("Apt", ""))
                 .map(x -> x.replace("Unit", "")).map(String::toUpperCase).sorted()
                 .collect(Collectors.toList());
+    }
+
+    public static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(REGION_LOCATOR);
+    }
+
+    public static int getPriceFromSearchItemResult(WebElement searchItem) {
+        return Integer.parseInt(searchItem.findElement(PRICE_LOCATOR).getText().replaceAll("[$,]", ""));
     }
 }
