@@ -62,9 +62,10 @@ public class MapPage extends MainPage {
     private static final Map<String, String> buttonsWithHoverOvers = new HashMap<>();
 
     static {
-        buttonsWithHoverOvers.put("Listings", "Properties");
         buttonsWithHoverOvers.put("Value Estimates", "Estimated Property Values");
         buttonsWithHoverOvers.put("$/ft² Estimates", "Estimated Price per Square Foot");
+        buttonsWithHoverOvers.put("Estimate Change", "Estimate Change");
+        buttonsWithHoverOvers.put("Estimate Accuracy", "Estimate Accuracy");
         buttonsWithHoverOvers.put("Living Area", "Property Living Area (square feet)");
         buttonsWithHoverOvers.put("Bedroom Count", "Property Number of Bedrooms");
         buttonsWithHoverOvers.put("Bathroom Count", "Property Number of Bathrooms");
@@ -75,6 +76,7 @@ public class MapPage extends MainPage {
         buttonsWithHoverOvers.put("List vs Sold", "List Price to Sell Price Ratio (%)");
         buttonsWithHoverOvers.put("Walkability", "National Walkability Index");
         buttonsWithHoverOvers.put("Elevation", "Elevation above sea level");
+        buttonsWithHoverOvers.put("Profitability", "Profitability");
         buttonsWithHoverOvers.put("Permits", "Permits");
     }
 
@@ -163,7 +165,7 @@ public class MapPage extends MainPage {
 
     public List<String> getSortedAddressesList(List<String> list) {
         return list.stream().map(x -> x.replace("Apt", ""))
-                .map(x -> x.replace("Unit", "")).map(String::toUpperCase).sorted()
+                .map(x -> x.replace("Unit", "")).map(x -> x.replace("Trlr", "")).map(String::toUpperCase).sorted()
                 .collect(Collectors.toList());
     }
 

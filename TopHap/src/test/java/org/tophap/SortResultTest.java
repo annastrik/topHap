@@ -1,5 +1,10 @@
 package org.tophap;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.tophap.model.api.SearchSortFilter;
@@ -17,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SortResultTest extends MultipleWebTest {
 
-    private static final String ZIP_CODE = "94523";
-    private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.13936414365219,37.923036066930806],[-122.016019856348,37.98461413680798]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+    private static final String ZIP_CODE = "94518";
+    private static final String BODY = "{\"size\":30,\"sort\":[{\"option\":\"list_price\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.0683583253275,37.929155924859984],[-121.97666267467167,37.9769430955231]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
 
     private List<Integer> searchResultsListAZ = new ArrayList<>();
     private List<Integer> searchResultsListZA = new ArrayList<>();
@@ -82,5 +87,20 @@ public class SortResultTest extends MultipleWebTest {
 
         assertEquals(searchResultsListAZ, searchResultsListOnServerAZ);
         assertEquals(searchResultsListZA, searchResultsListOnServerZA);
+    }
+
+    @Disabled
+    @Order(5)
+    @Test
+    void resultsInClientAndServerMatch_RestAssuredInterface() throws IOException {
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(BODY)
+                .when()
+                .post("https://staging-api.tophap.com/properties/search")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("items._source.rets.Facts.ListAmount", Matchers.hasItems(searchResultsListAZ.toArray()));
     }
 }

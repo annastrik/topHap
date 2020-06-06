@@ -1,5 +1,9 @@
 package org.tophap;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebElement;
@@ -19,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SearchByZipCodeTest extends MultipleWebTest {
 
-    private static final String ZIP_CODE = "94523";
-    private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.16544265011063,37.92303606693025],[-122.04209836280647,37.98461413680742]],\"zones\":[\"000394523\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+    private static final String ZIP_CODE = "94518";
+    private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.11114292160038,37.92326853694969],[-122.0442410783999,37.98438186084827]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
 
     private List<String> addressesListOnClient = new ArrayList<>();
     private List<SearchSortFilter.SearchItem> searchItemListOnServer = new ArrayList<>();
@@ -58,7 +62,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     @Test
     @Order(2)
-    void returnedResultsListFromServerMatchesResultsInClient() throws IOException {
+    void resultsInClientAndServerMatch_HttpClientInterface() throws IOException {
 
         searchItemListOnServer = SearchSortFilter.getSearchItemsList(BODY);
 
@@ -70,9 +74,23 @@ public class SearchByZipCodeTest extends MultipleWebTest {
         assertEquals(addressesListOnClient, addressesListOnServer);
     }
 
-    @Test
     @Order(3)
-    void allItemsReturnedFromServerHaveSubmittedZipCode() throws IOException {
+    @Test
+    void resultsInClientAndServerMatch_RestAssuredInterface() throws IOException {
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(BODY)
+                .when()
+                .post("https://staging-api.tophap.com/properties/search")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("items._source.address.UnparsedAddress", Matchers.hasItems(addressesListOnClient.toArray()));
+    }
+
+    @Test
+    @Order(4)
+    void serverResultsHaveSubmittedZipCode() throws IOException {
 
         List<String> itemsWithWrongZipCode = searchItemListOnServer.stream()
                 .map(SearchSortFilter.SearchItem::getZipCode)
