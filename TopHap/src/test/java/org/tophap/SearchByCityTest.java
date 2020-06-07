@@ -27,6 +27,17 @@ public class SearchByCityTest extends MultipleWebTest {
     private String getCityFromRegion(String region) {
         return region.substring(0, region.length() - 10);
     }
+    private String getZipFromRegion(String region) {
+        return region.substring(region.length() - 5);
+    }
+
+    private String getAddressChangeFormat(String address) {
+        return address.replace("Apt", "").replace("Unit", "").toUpperCase();
+    }
+
+    private String getStatusChangeFormat(String status) {
+        return status.replace("NEW", "Active").replace("ACTIVE", "Active");
+    }
 
     @Test
     @Order(1)
@@ -44,14 +55,16 @@ public class SearchByCityTest extends MultipleWebTest {
                 element -> {
                     WebElement region = MapPage.getRegionFromSearchItemResult(element);
                     String city = getCityFromRegion(region.getText());
+                    String address = getAddressChangeFormat(element.findElement(MapPage.ADDRESS_LOCATOR).getText());
+                    String zipCode = getZipFromRegion(region.getText());
+                    String status = getStatusChangeFormat(element.findElement(MapPage.STATUS_LOCATOR).getText());
+                    int price = MapPage.getPriceFromSearchItemResult(element);
                     assertEquals(CITY_NAME, city);
 
-                    // todo доделать!
-                    //searchItemList.add(new SearchSortFilter.SearchItemPOJO("1", "1", "1", city, "1"));
+                    searchItemList.add(new SearchSortFilter.SearchItemPOJO(price, address, zipCode, city.toUpperCase(), status));
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
-
     }
 
     @Test
@@ -66,7 +79,8 @@ public class SearchByCityTest extends MultipleWebTest {
                 .collect(Collectors.toList());
         assertEquals(0, itemsWithWrongCity.size());
 
-        // todo доделать!
-        //assertEquals(searchItemList, <list from SearchSortFilter.getSearchItemsList>);
+        List<SearchSortFilter.SearchItem> searchItemsForFilter = SearchSortFilter.getSearchItemsList(BODY);
+        assertTrue(searchItemList.containsAll(searchItemsForFilter)
+                && searchItemsForFilter.containsAll(searchItemList));
     }
 }
