@@ -61,6 +61,11 @@ public class TestHelper {
         action.moveToElement(element).perform();
     }
 
+    public static void moveToElementAndClick(WebDriver driver, WebElement element) {
+        Actions action = new Actions(driver);
+        action.moveToElement(element).click().perform();
+    }
+
     public static void moveToHiddenElement(WebDriver driver, WebElement analyticMenuBtn, WebElement moreContainerBtn) throws InterruptedException {
         Actions action = new Actions(driver);
         if (analyticMenuBtn.isDisplayed()) {

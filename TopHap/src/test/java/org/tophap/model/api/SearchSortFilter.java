@@ -20,6 +20,7 @@ public class SearchSortFilter {
         public abstract String getZipCode();
         public abstract String getCity();
         public abstract String getStatus();
+        public abstract int getYearBuilt();
 
         @Override
         public boolean equals(Object obj) {
@@ -43,6 +44,7 @@ public class SearchSortFilter {
         public String zipCode;
         public String city;
         public String status;
+        public int yearBuilt;
 
         public SearchItemPOJO(int price, String address, String zipCode, String city, String status) {
             this.price = price;
@@ -76,6 +78,11 @@ public class SearchSortFilter {
         public String getStatus() {
             return status;
         }
+
+        @Override
+        public int getYearBuilt() {
+            return yearBuilt;
+        }
     }
 
     public static class SearchItemJSON extends SearchItem {
@@ -93,7 +100,7 @@ public class SearchSortFilter {
 
         @Override
         public String getAddress() {
-            return item.getJSONObject("_source").getJSONObject("address").getString("UnparsedAddress");
+            return item.getJSONObject("_source").getJSONObject("address").getString("UnparsedAddress").replace("UNIT", "#");
         }
 
         @Override
@@ -109,6 +116,11 @@ public class SearchSortFilter {
         @Override
         public String getStatus() {
             return item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("TophapStatus");
+        }
+
+        @Override
+        public int getYearBuilt() {
+            return Integer.parseInt(item.getJSONObject("_source").getJSONObject("rets").getJSONObject("Facts").getString("YearBuilt"));
         }
     }
 

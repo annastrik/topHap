@@ -1,12 +1,11 @@
 package org.tophap.model.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.tophap.helpers.TestHelper;
 import org.tophap.model.pages.base.MainPage;
 
@@ -20,6 +19,7 @@ public class MapPage extends MainPage {
     public static final By ADDRESS_LOCATOR = By.cssSelector(".th-address");
     public static final By PRICE_LOCATOR = By.cssSelector(".th-price");
     public static final By STATUS_LOCATOR = By.cssSelector(".th-status-label");
+    public static final By YEAR_BUILT_LOCATOR = By.xpath("//div[6]/div[@class='th-property-info-value']");
 
     @FindBy(id = "th-geo-input")
     public WebElement searchInputField;
@@ -52,6 +52,22 @@ public class MapPage extends MainPage {
 
     @FindBy(xpath = "//label//span[text()='Active']")
     public WebElement activePropertyFilter;
+
+    @FindBy(xpath = "//div[text()='More']")
+    public WebElement moreFiltersBtn;
+
+    @FindBy(xpath = "//div[text()='Year Built']")
+    public WebElement yearBuiltFilter;
+
+    @FindBys({
+            @FindBy(xpath = "//div[contains(@class,'th-year-built-option')]//div[@class='MuiAutocomplete-endAdornment']")
+    })
+    public List<WebElement> openYearsDropDownMenu;
+
+    @FindBys({
+            @FindBy(css = ".th-year-built-option .th-select-input")
+    })
+    public List<WebElement> selectYearBtns;
 
     @FindBy(xpath = "//div[@class='jsx-1707507361 th-popover th-popover--expanded th-status-option']")
     public WebElement filterDropDownMenu;
@@ -119,12 +135,28 @@ public class MapPage extends MainPage {
     }
 
     private void applyPropertyStatusFilter(WebElement filterType) throws InterruptedException {
+        if (!propertyStatusFilterMenu.isDisplayed()) {
+            this.moreFiltersBtn.click();
+        }
         this.propertyStatusFilterMenu.click();
         getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
         filterType.click();
     }
 
     public void applyActivePropertyStatusFilter() throws InterruptedException {
+        applyPropertyStatusFilter(this.activePropertyFilter);
+    }
+
+    public void applyYearBuiltFilter(String year) throws InterruptedException {
+        if (!yearBuiltFilter.isDisplayed()) {
+            this.moreFiltersBtn.click();
+        }
+        this.yearBuiltFilter.click();
+        openYearsDropDownMenu.get(0).click();
+        TestHelper.moveToElementAndClick(getDriver(), getDriver().findElement(By.xpath(String.format("//*[text()='%s']", year))));
+    }
+
+    public void applyFilter() throws InterruptedException {
         applyPropertyStatusFilter(this.activePropertyFilter);
     }
 
@@ -175,5 +207,9 @@ public class MapPage extends MainPage {
 
     public static int getPriceFromSearchItemResult(WebElement searchItem) {
         return Integer.parseInt(searchItem.findElement(PRICE_LOCATOR).getText().replaceAll("[$,]", ""));
+    }
+
+    public static int getYearBuiltFromSearchItemResult(WebElement searchItem) {
+        return Integer.parseInt(searchItem.findElement(YEAR_BUILT_LOCATOR).getText());
     }
 }
