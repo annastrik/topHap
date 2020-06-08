@@ -1,10 +1,5 @@
 package org.tophap;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebElement;
@@ -29,7 +24,6 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.11114292160038,37.92326853694969],[-122.0442410783999,37.98438186084827]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
 
     private List<SearchSortFilter.SearchItem> searchItemList = new ArrayList<>();
-    private List<SearchSortFilter.SearchItem> sortedSearchItemList = new ArrayList<>();
     private List<SearchSortFilter.SearchItem> searchItemListOnServer = new ArrayList<>();
 
     private String getZipFromRegion(String region) {
@@ -40,15 +34,6 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
         return region.substring(0, region.length() - 10).toUpperCase();
     }
 
-    private String getAddressChangeFormat(String address) {
-        return address.replace("Apt", "").replace("Unit", "").toUpperCase();
-    }
-
-    private String getStatusChangeFormat(String status) {
-        return status.replace("NEW", "Active").replace("ACTIVE", "Active");
-    }
-
-    @Disabled
     @Test
     @Order(1)
     void returnedResultsAreInSearchedZipCodeArea() throws InterruptedException {
@@ -68,18 +53,15 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
                     String zipCode = getZipFromRegion(region.getText());
                     assertEquals(ZIP_CODE, zipCode);
                     String city = getCityFromRegion(region.getText());
-                    String address = getAddressChangeFormat(element.findElement(MapPage.ADDRESS_LOCATOR).getText());
+                    String address = MapPage.getAddressFromSearchItemResult(element);
                     int price = MapPage.getPriceFromSearchItemResult(element);
-                    String status = getStatusChangeFormat(element.findElement(MapPage.STATUS_LOCATOR).getText());
+                    String status = MapPage.getStatusFromSearchItemResult(element);
                     searchItemList.add(new SearchSortFilter.SearchItemPOJO(price, address, zipCode, city, status));
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
-        // todo Sergei has to explain how to sort objects, then the test will be fixed and @disabled will be removed
-        sortedSearchItemList = searchItemList.stream().sorted().collect(Collectors.toList());
     }
 
-    @Disabled
     @Test
     @Order(2)
     void serverResultsHaveSubmittedZipCode() throws IOException {
@@ -94,27 +76,11 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
         assertEquals(0, itemsWithWrongZipCode.size());
     }
 
-    @Disabled
     @Test
     @Order(3)
-    void resultsInClientAndServerMatch_HttpClientInterface() throws IOException {
+    void resultsOnClientAndServerMatch_HttpClientInterface() throws IOException {
 
-        // todo Sergei has to explain how to sort objects, then the test will be fixed and @disabled will be removed
-        List<SearchSortFilter.SearchItem> sortedSearchItemListOnServer = searchItemListOnServer.stream().sorted().collect(Collectors.toList());
-        assertEquals(sortedSearchItemList, sortedSearchItemListOnServer);
-    }
-
-    @Order(4)
-    @Test
-    void resultsInClientAndServerMatch_RestAssuredInterface() throws IOException {
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(BODY)
-                .when()
-                .post("https://staging-api.tophap.com/properties/search")
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .body("items._source.address.UnparsedAddress", Matchers.hasItems(sortedSearchItemList.toArray()));
+        assertTrue(searchItemList.containsAll(searchItemListOnServer)
+                && searchItemListOnServer.containsAll(searchItemList));
     }
 }

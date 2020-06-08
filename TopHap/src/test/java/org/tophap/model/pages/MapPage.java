@@ -1,17 +1,14 @@
 package org.tophap.model.pages;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.tophap.helpers.TestHelper;
 import org.tophap.model.pages.base.MainPage;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MapPage extends MainPage {
 
@@ -156,10 +153,6 @@ public class MapPage extends MainPage {
         TestHelper.moveToElementAndClick(getDriver(), getDriver().findElement(By.xpath(String.format("//*[text()='%s']", year))));
     }
 
-    public void applyFilter() throws InterruptedException {
-        applyPropertyStatusFilter(this.activePropertyFilter);
-    }
-
     private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");
 
     public int forEachItemInSearchResult(Consumer<WebElement> acceptElement) {
@@ -195,18 +188,22 @@ public class MapPage extends MainPage {
         }
     }
 
-    public List<String> getSortedAddressesList(List<String> list) {
-        return list.stream().map(x -> x.replace("Apt", ""))
-                .map(x -> x.replace("Unit", "")).map(x -> x.replace("Trlr", "")).map(String::toUpperCase).sorted()
-                .collect(Collectors.toList());
-    }
-
     public static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
         return searchItem.findElement(REGION_LOCATOR);
     }
 
     public static int getPriceFromSearchItemResult(WebElement searchItem) {
         return Integer.parseInt(searchItem.findElement(PRICE_LOCATOR).getText().replaceAll("[$,]", ""));
+    }
+
+    public static String getAddressFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(ADDRESS_LOCATOR).getText()
+                .replace("Apt", "").replace("Unit", "").replace("Trlr", "").toUpperCase();
+    }
+
+    public static String getStatusFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(STATUS_LOCATOR).getText()
+                .replace("NEW", "Active").replace("ACTIVE", "Active");
     }
 
     public static int getYearBuiltFromSearchItemResult(WebElement searchItem) {

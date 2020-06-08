@@ -53,16 +53,16 @@ public class SearchByZipCodeTest extends MultipleWebTest {
                     WebElement region = MapPage.getRegionFromSearchItemResult(element);
                     String zipCode = getZipFromRegion(region.getText());
                     assertEquals(ZIP_CODE, zipCode);
-                    searchItemList.add(element.findElement(MapPage.ADDRESS_LOCATOR).getText());
+                    searchItemList.add(MapPage.getAddressFromSearchItemResult(element));
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
-        addressesListOnClient = mapPage.getSortedAddressesList(searchItemList);
+        addressesListOnClient = searchItemList.stream().sorted().collect(Collectors.toList());
     }
 
     @Test
     @Order(2)
-    void resultsInClientAndServerMatch_HttpClientInterface() throws IOException {
+    void resultsOnClientAndServerMatch_HttpClientInterface() throws IOException {
 
         searchItemListOnServer = SearchSortFilter.getSearchItemsList(BODY);
 
@@ -76,7 +76,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     @Order(3)
     @Test
-    void resultsInClientAndServerMatch_RestAssuredInterface() throws IOException {
+    void resultsOnClientAndServerMatch_RestAssuredInterface() throws IOException {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

@@ -45,11 +45,11 @@ public class FilterYearBuiltTest extends MultipleWebTest {
                 element -> {
                     int yearBuilt = MapPage.getYearBuiltFromSearchItemResult(element);
                     assertTrue(yearBuilt >= YEAR_INT);
-                    addressesList.add(element.findElement(MapPage.ADDRESS_LOCATOR).getText());
+                    addressesList.add(MapPage.getAddressFromSearchItemResult(element));
                 });
 
         assertTrue(searchResultsCountOnClient > 0, "No items in search results");
-        addressesListOnClient = mapPage.getSortedAddressesList(addressesList);
+        addressesListOnClient = addressesList.stream().sorted().collect(Collectors.toList());
     }
 
     @Test
