@@ -29,10 +29,6 @@ public class SearchByZipCodeTest extends MultipleWebTest {
     private List<String> addressesListOnClient = new ArrayList<>();
     private List<SearchSortFilter.SearchItem> searchItemListOnServer = new ArrayList<>();
 
-    private String getZipFromRegion(String region) {
-        return region.substring(region.length() - 5);
-    }
-
     @Test
     @Order(1)
     void returnedResultsAreInSearchedZipCodeArea() throws InterruptedException {
@@ -51,7 +47,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
         int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
                     WebElement region = MapPage.getRegionFromSearchItemResult(element);
-                    String zipCode = getZipFromRegion(region.getText());
+                    String zipCode = MapPage.getZipFromRegion(region.getText());
                     assertEquals(ZIP_CODE, zipCode);
                     searchItemList.add(MapPage.getAddressFromSearchItemResult(element));
                 });

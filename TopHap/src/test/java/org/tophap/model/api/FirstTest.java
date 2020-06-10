@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 import org.tophap.runner.MultipleApiTest;
 
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,9 +59,22 @@ public class FirstTest extends MultipleApiTest {
         }
     }
 
+    private static Stream<Arguments> testAssured() {
+        return Stream.of(
+                Arguments.of(3, "three"),
+                Arguments.of(2, "two"),
+                Arguments.of(1, "one")
+        );
+    }
+
     @Order(2)
-    @Test
-    void testAssured() throws IOException {
+    @ParameterizedTest
+    @MethodSource
+    void testAssured(String num, String name) throws IOException {
+
+        System.out.print(num);
+        System.out.print(" - ");
+        System.out.println(name);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

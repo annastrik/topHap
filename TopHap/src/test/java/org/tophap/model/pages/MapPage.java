@@ -5,12 +5,38 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tophap.helpers.TestHelper;
+import org.tophap.model.api.SearchSortFilter;
 import org.tophap.model.pages.base.MainPage;
 
 import java.util.*;
 import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MapPage extends MainPage {
+
+    private static final Map<String, String> buttonsWithHoverOvers = new HashMap<>();
+
+    static {
+        buttonsWithHoverOvers.put("Value Estimates", "Estimated Property Values");
+        buttonsWithHoverOvers.put("$/ft² Estimates", "Estimated Price per Square Foot");
+        buttonsWithHoverOvers.put("Estimate Change", "Estimate Change");
+        buttonsWithHoverOvers.put("Estimate Accuracy", "Estimate Accuracy");
+        buttonsWithHoverOvers.put("Living Area", "Property Living Area (square feet)");
+        buttonsWithHoverOvers.put("Bedroom Count", "Property Number of Bedrooms");
+        buttonsWithHoverOvers.put("Bathroom Count", "Property Number of Bathrooms");
+        buttonsWithHoverOvers.put("Lot Size", "Property Lot Size (acres)");
+        buttonsWithHoverOvers.put("Age", "Property Age (years)");
+        buttonsWithHoverOvers.put("Ownership Time", "Current Ownership Time (days)");
+        buttonsWithHoverOvers.put("DOM", "Days on market");
+        buttonsWithHoverOvers.put("List vs Sold", "List Price to Sell Price Ratio (%)");
+        buttonsWithHoverOvers.put("Walkability", "National Walkability Index");
+        buttonsWithHoverOvers.put("Elevation", "Elevation above sea level");
+        buttonsWithHoverOvers.put("Profitability", "Profitability");
+        buttonsWithHoverOvers.put("Permits", "Permits");
+    }
+
+    private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");
 
     public static final By REGION_LOCATOR = By.cssSelector(".th-region");
     public static final By ADDRESS_LOCATOR = By.cssSelector(".th-address");
@@ -72,25 +98,34 @@ public class MapPage extends MainPage {
     @FindBy(className = "th-more-container")
     public WebElement moreContainerBtn;
 
-    private static final Map<String, String> buttonsWithHoverOvers = new HashMap<>();
+    public static String getZipFromRegion(String region) {
+        return region.substring(region.length() - 5);
+    }
 
-    static {
-        buttonsWithHoverOvers.put("Value Estimates", "Estimated Property Values");
-        buttonsWithHoverOvers.put("$/ft² Estimates", "Estimated Price per Square Foot");
-        buttonsWithHoverOvers.put("Estimate Change", "Estimate Change");
-        buttonsWithHoverOvers.put("Estimate Accuracy", "Estimate Accuracy");
-        buttonsWithHoverOvers.put("Living Area", "Property Living Area (square feet)");
-        buttonsWithHoverOvers.put("Bedroom Count", "Property Number of Bedrooms");
-        buttonsWithHoverOvers.put("Bathroom Count", "Property Number of Bathrooms");
-        buttonsWithHoverOvers.put("Lot Size", "Property Lot Size (acres)");
-        buttonsWithHoverOvers.put("Age", "Property Age (years)");
-        buttonsWithHoverOvers.put("Ownership Time", "Current Ownership Time (days)");
-        buttonsWithHoverOvers.put("DOM", "Days on market");
-        buttonsWithHoverOvers.put("List vs Sold", "List Price to Sell Price Ratio (%)");
-        buttonsWithHoverOvers.put("Walkability", "National Walkability Index");
-        buttonsWithHoverOvers.put("Elevation", "Elevation above sea level");
-        buttonsWithHoverOvers.put("Profitability", "Profitability");
-        buttonsWithHoverOvers.put("Permits", "Permits");
+    public static String getCityFromRegion(String region) {
+        return region.substring(0, region.length() - 10).toUpperCase();
+    }
+
+    public static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(REGION_LOCATOR);
+    }
+
+    public static int getPriceFromSearchItemResult(WebElement searchItem) {
+        return Integer.parseInt(searchItem.findElement(PRICE_LOCATOR).getText().replaceAll("[$,]", ""));
+    }
+
+    public static String getAddressFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(ADDRESS_LOCATOR).getText()
+                .replace("Apt", "").replace("Unit", "").replace("Trlr", "").toUpperCase();
+    }
+
+    public static String getStatusFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(STATUS_LOCATOR).getText()
+                .replace("NEW", "Active").replace("ACTIVE", "Active");
+    }
+
+    public static int getYearBuiltFromSearchItemResult(WebElement searchItem) {
+        return Integer.parseInt(searchItem.findElement(YEAR_BUILT_LOCATOR).getText());
     }
 
     public MapPage(WebDriver driver) {
@@ -153,8 +188,6 @@ public class MapPage extends MainPage {
         TestHelper.moveToElementAndClick(getDriver(), getDriver().findElement(By.xpath(String.format("//*[text()='%s']", year))));
     }
 
-    private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");
-
     public int forEachItemInSearchResult(Consumer<WebElement> acceptElement) {
         List<WebElement> resultSearchResultList = new ArrayList<>();
         int index = 0;
@@ -180,33 +213,28 @@ public class MapPage extends MainPage {
         return resultSearchResultList.size();
     }
 
+    public List<SearchSortFilter.SearchItem> getListItemFromSearchResult() {
+        List<SearchSortFilter.SearchItem> result = new ArrayList<>();
+
+        this.forEachItemInSearchResult(
+                        element -> {
+                            WebElement region = getRegionFromSearchItemResult(element);
+                            result.add(new SearchSortFilter.SearchItemPOJO(
+                                    getPriceFromSearchItemResult(element),
+                                    getAddressFromSearchItemResult(element),
+                                    getZipFromRegion(region.getText()),
+                                    getCityFromRegion(region.getText()),
+                                    getStatusFromSearchItemResult(element)));
+                        });
+
+        return result;
+    }
+
     public void forEachButtonInAnalyticMenu(Consumer<WebElement> eachButtonsHoverOver) throws InterruptedException {
         for (Map.Entry<String, String> entry : buttonsWithHoverOvers.entrySet()) {
             TestHelper.moveToHiddenElement(getDriver(), getDriver().findElement(By.xpath(
                     String.format("//span[text()='%s']", entry.getKey()))), this.moreContainerBtn);
             eachButtonsHoverOver.accept(getDriver().findElement(By.xpath(String.format("//div[text()='%s']", entry.getValue()))));
         }
-    }
-
-    public static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
-        return searchItem.findElement(REGION_LOCATOR);
-    }
-
-    public static int getPriceFromSearchItemResult(WebElement searchItem) {
-        return Integer.parseInt(searchItem.findElement(PRICE_LOCATOR).getText().replaceAll("[$,]", ""));
-    }
-
-    public static String getAddressFromSearchItemResult(WebElement searchItem) {
-        return searchItem.findElement(ADDRESS_LOCATOR).getText()
-                .replace("Apt", "").replace("Unit", "").replace("Trlr", "").toUpperCase();
-    }
-
-    public static String getStatusFromSearchItemResult(WebElement searchItem) {
-        return searchItem.findElement(STATUS_LOCATOR).getText()
-                .replace("NEW", "Active").replace("ACTIVE", "Active");
-    }
-
-    public static int getYearBuiltFromSearchItemResult(WebElement searchItem) {
-        return Integer.parseInt(searchItem.findElement(YEAR_BUILT_LOCATOR).getText());
     }
 }
