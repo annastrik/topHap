@@ -70,7 +70,7 @@ public class FirstTest extends MultipleApiTest {
     @Order(2)
     @ParameterizedTest
     @MethodSource
-    void testAssured(String num, String name) throws IOException {
+    void testAssured(Integer num, String name) throws IOException {
 
         System.out.print(num);
         System.out.print(" - ");
