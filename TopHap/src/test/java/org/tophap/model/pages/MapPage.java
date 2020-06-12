@@ -163,6 +163,7 @@ public class MapPage extends MainPage {
     }
 
     public void submitSearch(String searchCriteria) throws InterruptedException {
+        this.clearOldSearchAndFilterRecords();
         this.searchInputField.sendKeys(searchCriteria);
         Thread.sleep(2000);
         this.searchBtn.click();
