@@ -89,18 +89,24 @@ public class SortResultTest extends MultipleWebTest {
         assertEquals(searchResultsListZA, searchResultsListOnServerZA);
     }
 
-    @Disabled
     @Order(5)
     @Test
     void resultsInClientAndServerMatch_RestAssuredInterface() throws IOException {
 
-        RestAssured.given()
+        List<Integer> apiResponseList = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(BODY)
                 .when()
                 .post("https://staging-api.tophap.com/properties/search")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
-                .body("items._source.rets.Facts.ListAmount", Matchers.hasItems(searchResultsListAZ.toArray()));
+                .extract()
+                .<List<String>>path("items._source.rets.Facts.ListAmount")
+                .stream().map(Double::valueOf).map(Double::intValue)
+                .collect(Collectors.toList());
+
+        assertTrue(searchResultsListAZ.containsAll(apiResponseList)
+                && searchResultsListAZ.containsAll(apiResponseList)
+                && apiResponseList.containsAll(searchResultsListAZ));
     }
 }
