@@ -11,8 +11,6 @@ import org.tophap.model.pages.base.MainPage;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class MapPage extends MainPage {
 
     private static final Map<String, String> buttonsWithHoverOvers = new HashMap<>();
@@ -36,7 +34,7 @@ public class MapPage extends MainPage {
         buttonsWithHoverOvers.put("Permits", "Permits");
     }
 
-    private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-item-wrapper");
+    private static final By SEARCH_ITEM_LOCATOR = By.cssSelector(".th-property-card");
 
     public static final By REGION_LOCATOR = By.cssSelector(".th-region");
     public static final By ADDRESS_LOCATOR = By.cssSelector(".th-address");
@@ -217,15 +215,15 @@ public class MapPage extends MainPage {
         List<SearchSortFilter.SearchItem> result = new ArrayList<>();
 
         this.forEachItemInSearchResult(
-                        element -> {
-                            WebElement region = getRegionFromSearchItemResult(element);
-                            result.add(new SearchSortFilter.SearchItemPOJO(
-                                    getPriceFromSearchItemResult(element),
-                                    getAddressFromSearchItemResult(element),
-                                    getZipFromRegion(region.getText()),
-                                    getCityFromRegion(region.getText()),
-                                    getStatusFromSearchItemResult(element)));
-                        });
+                element -> {
+                    WebElement region = getRegionFromSearchItemResult(element);
+                    result.add(new SearchSortFilter.SearchItemPOJO(
+                            getPriceFromSearchItemResult(element),
+                            getAddressFromSearchItemResult(element),
+                            getZipFromRegion(region.getText()),
+                            getCityFromRegion(region.getText()),
+                            getStatusFromSearchItemResult(element)));
+                });
 
         return result;
     }

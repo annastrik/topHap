@@ -2,7 +2,6 @@ package org.tophap;
 
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebElement;
 import org.tophap.helpers.UserHelper;
 import org.tophap.model.api.SearchSortFilter;
 import org.tophap.model.pages.HomePage;

@@ -70,6 +70,7 @@ public class TestHelper {
         Actions action = new Actions(driver);
         if (analyticMenuBtn.isDisplayed()) {
             action.moveToElement(analyticMenuBtn).perform();
+            new WebDriverWait(driver, 10).until(TestHelper.movingIsFinished(analyticMenuBtn));
         } else {
             action.moveToElement(moreContainerBtn).perform();
             TestHelper.moveToElement(driver,
