@@ -1,5 +1,9 @@
 package org.tophap;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.tophap.helpers.UserHelper;
@@ -54,13 +58,14 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
     @Test
     @Order(2)
     void serverResultsHaveSubmittedZipCode() throws IOException {
+
         searchItemListOnServer = SearchSortFilter.getSearchItemsList(BODY);
 
-        List<String> itemsWithWrongZipCode = searchItemListOnServer.stream()
+        assertEquals(searchItemListOnServer.size(),
+                searchItemListOnServer.stream()
                 .map(SearchItem::getZipCode)
-                .filter(x -> !ZIP_CODE.equals(x))
-                .collect(Collectors.toList());
-        assertEquals(0, itemsWithWrongZipCode.size());
+                .filter(ZIP_CODE::equals)
+                .count());
     }
 
     @Test
@@ -69,5 +74,20 @@ public class SearchByZipCodeFullTest extends MultipleWebTest {
 
         assertTrue(searchItemList.containsAll(searchItemListOnServer)
                 && searchItemListOnServer.containsAll(searchItemList));
+    }
+
+    @Order(4)
+    @Test
+    void resultsOnClientAndServerMatch_RestAssuredInterface() throws IOException {
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(BODY)
+                .when()
+                .post("https://staging-api.tophap.com/properties/search")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("items._source.address.UnparsedAddress",
+                        Matchers.hasItems(searchItemList.stream().map(SearchItem::getAddress).collect(Collectors.toList()).toArray()));
     }
 }

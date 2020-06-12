@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import static org.tophap.model.api.SearchSortFilter.SearchItem;
+
 public class SearchSoldPropertiesApiTest extends MultipleApiTest {
 
     private static final String STATUS = "Sold";
@@ -24,7 +26,7 @@ public class SearchSoldPropertiesApiTest extends MultipleApiTest {
     void soldStatusReturned_HttpClientInterface() throws IOException {
 
         List<String> itemsWithStatusNotSold = SearchSortFilter.getSearchItemsList(SearchSortFilter.getSearchBodyByStatus(STATUS)).stream()
-                .map(SearchSortFilter.SearchItem::getStatus)
+                .map(SearchItem::getStatus)
                 .filter(x -> !STATUS.equals(x))
                 .collect(Collectors.toList());
         assertEquals(0, itemsWithStatusNotSold.size());

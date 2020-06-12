@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.tophap.model.api.SearchSortFilter.SearchItem;
+
 public class FilterYearBuiltTest extends MultipleWebTest {
 
     private static final String ZIP_CODE = "94024";
@@ -28,7 +30,7 @@ public class FilterYearBuiltTest extends MultipleWebTest {
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.20580563727256,37.30873431299226],[-122.07485136272709,37.40953942032269]],\"zones\":[\"000394024\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{\"min\":2010}}}}";
 
     private List<String> addressesListOnClient = new ArrayList<>();
-    private List<SearchSortFilter.SearchItem> searchItemListOnServer = new ArrayList<>();
+    private List<SearchItem> searchItemListOnServer = new ArrayList<>();
 
     @Test
     @Order(1)
@@ -59,7 +61,7 @@ public class FilterYearBuiltTest extends MultipleWebTest {
         searchItemListOnServer = SearchSortFilter.getSearchItemsList(BODY);
 
         List<Integer> itemsWithWrongYear = searchItemListOnServer.stream()
-                .map(SearchSortFilter.SearchItem::getYearBuilt)
+                .map(SearchItem::getYearBuilt)
                 .filter(x -> x < YEAR_INT)
                 .collect(Collectors.toList());
         assertEquals(0, itemsWithWrongYear.size());
@@ -71,7 +73,7 @@ public class FilterYearBuiltTest extends MultipleWebTest {
 
         List<String> addressesListOnServer = searchItemListOnServer
                 .stream()
-                .map(SearchSortFilter.SearchItem::getAddress)
+                .map(SearchItem::getAddress)
                 .sorted()
                 .collect(Collectors.toList());
         assertEquals(addressesListOnServer, addressesListOnClient);

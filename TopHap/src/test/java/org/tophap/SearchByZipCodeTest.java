@@ -6,7 +6,6 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebElement;
 import org.tophap.helpers.UserHelper;
 import org.tophap.model.api.SearchSortFilter;
 import org.tophap.runner.MultipleWebTest;
@@ -21,13 +20,15 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.tophap.model.api.SearchSortFilter.SearchItem;
+
 public class SearchByZipCodeTest extends MultipleWebTest {
 
     private static final String ZIP_CODE = "94518";
     private static final String BODY = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.11114292160038,37.92326853694969],[-122.0442410783999,37.98438186084827]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
 
     private List<String> addressesListOnClient = new ArrayList<>();
-    private List<SearchSortFilter.SearchItem> searchItemListOnServer = new ArrayList<>();
+    private List<SearchItem> searchItemListOnServer = new ArrayList<>();
 
     @Test
     @Order(1)
@@ -46,8 +47,7 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
         int searchResultsCountOnClient = mapPage.forEachItemInSearchResult(
                 element -> {
-                    WebElement region = MapPage.getRegionFromSearchItemResult(element);
-                    String zipCode = MapPage.getZipFromRegion(region.getText());
+                    String zipCode = MapPage.getZipFromSearchItemResult(element);
                     assertEquals(ZIP_CODE, zipCode);
                     searchItemList.add(MapPage.getAddressFromSearchItemResult(element));
                 });
@@ -58,19 +58,30 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     @Test
     @Order(2)
+    void serverResultsHaveSubmittedZipCode() throws IOException {
+
+        List<String> itemsWithWrongZipCode = searchItemListOnServer.stream()
+                .map(SearchItem::getZipCode)
+                .filter(x -> !ZIP_CODE.equals(x))
+                .collect(Collectors.toList());
+        assertEquals(0, itemsWithWrongZipCode.size());
+    }
+
+    @Test
+    @Order(3)
     void resultsOnClientAndServerMatch_HttpClientInterface() throws IOException {
 
         searchItemListOnServer = SearchSortFilter.getSearchItemsList(BODY);
 
         List<String> addressesListOnServer = searchItemListOnServer
                 .stream()
-                .map(SearchSortFilter.SearchItem::getAddress)
+                .map(SearchItem::getAddress)
                 .sorted()
                 .collect(Collectors.toList());
         assertEquals(addressesListOnClient, addressesListOnServer);
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void resultsOnClientAndServerMatch_RestAssuredInterface() throws IOException {
 
@@ -82,16 +93,5 @@ public class SearchByZipCodeTest extends MultipleWebTest {
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .body("items._source.address.UnparsedAddress", Matchers.hasItems(addressesListOnClient.toArray()));
-    }
-
-    @Test
-    @Order(4)
-    void serverResultsHaveSubmittedZipCode() throws IOException {
-
-        List<String> itemsWithWrongZipCode = searchItemListOnServer.stream()
-                .map(SearchSortFilter.SearchItem::getZipCode)
-                .filter(x -> !ZIP_CODE.equals(x))
-                .collect(Collectors.toList());
-        assertEquals(0, itemsWithWrongZipCode.size());
     }
 }

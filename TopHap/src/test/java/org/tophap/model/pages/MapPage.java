@@ -96,16 +96,18 @@ public class MapPage extends MainPage {
     @FindBy(className = "th-more-container")
     public WebElement moreContainerBtn;
 
-    public static String getZipFromRegion(String region) {
+    private static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
+        return searchItem.findElement(REGION_LOCATOR);
+    }
+
+    public static String getZipFromSearchItemResult(WebElement searchItem) {
+        String region = getRegionFromSearchItemResult(searchItem).getText();
         return region.substring(region.length() - 5);
     }
 
-    public static String getCityFromRegion(String region) {
+    public static String getCityFromSearchItemResult(WebElement searchItem) {
+        String region = getRegionFromSearchItemResult(searchItem).getText();
         return region.substring(0, region.length() - 10).toUpperCase();
-    }
-
-    public static WebElement getRegionFromSearchItemResult(WebElement searchItem) {
-        return searchItem.findElement(REGION_LOCATOR);
     }
 
     public static int getPriceFromSearchItemResult(WebElement searchItem) {
@@ -119,7 +121,8 @@ public class MapPage extends MainPage {
 
     public static String getStatusFromSearchItemResult(WebElement searchItem) {
         return searchItem.findElement(STATUS_LOCATOR).getText()
-                .replace("NEW", "Active").replace("ACTIVE", "Active");
+                .replace("NEW", "Active").replace("ACTIVE", "Active")
+                .replace("FOR SALE", "Active");
     }
 
     public static int getYearBuiltFromSearchItemResult(WebElement searchItem) {
@@ -128,6 +131,27 @@ public class MapPage extends MainPage {
 
     public MapPage(WebDriver driver) {
         super(driver);
+    }
+
+    private void submitSearchApplySortingAndFilters(WebElement orderAtoZorZtoA, String zipCode) throws InterruptedException {
+        this.clearOldSearchAndFilterRecords();
+        this.submitSearch(zipCode);
+        getWait10().until(ExpectedConditions.visibilityOf(this.searchResultsMenu));
+        this.sortMenu.click();
+        orderAtoZorZtoA.click();
+        this.selectPriceSorting.click();
+        this.propertyStatusFilterMenu.click();
+        getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
+        this.activePropertyFilter.click();
+    }
+
+    private void applyPropertyStatusFilter(WebElement filterType) throws InterruptedException {
+        if (!propertyStatusFilterMenu.isDisplayed()) {
+            this.moreFiltersBtn.click();
+        }
+        this.propertyStatusFilterMenu.click();
+        getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
+        filterType.click();
     }
 
     public void clearOldSearchAndFilterRecords() {
@@ -150,27 +174,6 @@ public class MapPage extends MainPage {
 
     public void submitSearchApplySortingAndFiltersZA(String zipCode) throws InterruptedException {
         submitSearchApplySortingAndFilters(this.sortZABtn, zipCode);
-    }
-
-    private void submitSearchApplySortingAndFilters(WebElement orderAtoZorZtoA, String zipCode) throws InterruptedException {
-        this.clearOldSearchAndFilterRecords();
-        this.submitSearch(zipCode);
-        getWait10().until(ExpectedConditions.visibilityOf(this.searchResultsMenu));
-        this.sortMenu.click();
-        orderAtoZorZtoA.click();
-        this.selectPriceSorting.click();
-        this.propertyStatusFilterMenu.click();
-        getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
-        this.activePropertyFilter.click();
-    }
-
-    private void applyPropertyStatusFilter(WebElement filterType) throws InterruptedException {
-        if (!propertyStatusFilterMenu.isDisplayed()) {
-            this.moreFiltersBtn.click();
-        }
-        this.propertyStatusFilterMenu.click();
-        getWait10().until(ExpectedConditions.visibilityOf(this.filterDropDownMenu));
-        filterType.click();
     }
 
     public void applyActivePropertyStatusFilter() throws InterruptedException {
@@ -216,12 +219,11 @@ public class MapPage extends MainPage {
 
         this.forEachItemInSearchResult(
                 element -> {
-                    WebElement region = getRegionFromSearchItemResult(element);
                     result.add(new SearchSortFilter.SearchItemPOJO(
                             getPriceFromSearchItemResult(element),
                             getAddressFromSearchItemResult(element),
-                            getZipFromRegion(region.getText()),
-                            getCityFromRegion(region.getText()),
+                            getZipFromSearchItemResult(element),
+                            getCityFromSearchItemResult(element),
                             getStatusFromSearchItemResult(element)));
                 });
 
