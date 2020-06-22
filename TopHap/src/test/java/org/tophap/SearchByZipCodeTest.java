@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.tophap.helpers.TestHelper;
 import org.tophap.helpers.UserHelper;
 import org.tophap.model.api.SearchSortFilter;
 import org.tophap.model.pages.HomePage;
@@ -17,9 +18,7 @@ import org.tophap.model.pages.MapPage;
 import org.tophap.runner.MultipleWebTest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,19 +28,19 @@ import static org.tophap.model.api.SearchSortFilter.SearchItem;
 
 public class SearchByZipCodeTest extends MultipleWebTest {
 
-    private static final String ZIP_CODE1 = "94024";
-    private static final String ZIP_CODE2 = "94518";
-    private static final String BODY1 = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.17183890850436,37.326302031836164],[-122.02941709149604,37.388474345264356]],\"zones\":[\"000394024\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
-    private static final String BODY2 = "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.11114292160038,37.92326853694969],[-122.0442410783999,37.98438186084827]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}";
+    private static final String[][] params = {
+            {"94024", "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.17183890850436,37.326302031836164],[-122.02941709149604,37.388474345264356]],\"zones\":[\"000394024\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}"},
+            {"94518", "{\"size\":500,\"sort\":[{\"option\":\"id\",\"dir\":\"asc\"}],\"filters\":{\"bounds\":[[-122.11114292160038,37.92326853694969],[-122.0442410783999,37.98438186084827]],\"zones\":[\"000394518\"],\"metricsFilter\":{\"baths\":{},\"beds\":{},\"garage_spaces\":{},\"living_area\":{},\"lot_acres\":{},\"ownership_days\":{},\"period\":{},\"price\":{},\"price_sqft\":{},\"property_type\":{\"values\":[]},\"rental\":false,\"status\":{\"values\":[\"Active\"],\"close_date\":{\"min\":\"now-1M/d\"}},\"stories\":{},\"year_built\":{}}}}"}};
 
-    private List<SearchItem> searchItemList = new ArrayList<>();
-    private List<SearchItem> searchItemListOnServer = new ArrayList<>();
+    private final Map<String, List<SearchItem>> searchItemsMap = new HashMap<>();
+    private final Map<String, List<SearchItem>> searchItemsMapOnServer = new HashMap<>();
 
-    private static Stream<Arguments> zipBodyParameters() {
-        return Stream.of(
-                Arguments.of(ZIP_CODE1, BODY1),
-                Arguments.of(ZIP_CODE2, BODY2)
-        );
+    private static Stream<String> getZipCodesForTest() {
+        return Arrays.stream(params).map(arr -> arr[0]);
+    }
+
+    private static Stream<Arguments> getAllArgsForTest() {
+        return Arrays.stream(params).map(arr -> Arguments.of(arr[0], arr[1]));
     }
 
     @Order(1)
@@ -56,58 +55,72 @@ public class SearchByZipCodeTest extends MultipleWebTest {
 
     @Order(2)
     @ParameterizedTest
-    @MethodSource("zipBodyParameters")
-    void returnedResultsAreInSearchedZipCodeArea(String zip, String body) throws InterruptedException {
+    @MethodSource("getZipCodesForTest")
+    void returnedResultsAreInSearchedZipCodeArea(String zip) throws InterruptedException {
 
         MapPage mapPage = new MapPage(getDriver());
         mapPage.submitSearch(zip);
         mapPage.applyActivePropertyStatusFilter();
 
-        searchItemList = mapPage.getListItemFromSearchResult();
+        List<SearchItem> list = mapPage.getListItemFromSearchResult();
+        searchItemsMap.put(zip, list);
+
         assertEquals(
-                searchItemList.size(),
-                searchItemList.stream()
+                list.size(),
+                list.stream()
                         .map(SearchItem::getZipCode)
                         .filter(zip::equals)
                         .count());
 
-        assertTrue(searchItemList.size() > 0, "No items in search results");
+        assertTrue(list.size() > 0, "No items in search results");
     }
 
     @Order(3)
     @ParameterizedTest
-    @MethodSource("zipBodyParameters")
+    @MethodSource("getAllArgsForTest")
     void serverResultsHaveSubmittedZipCode(String zip, String body) throws IOException {
 
-        searchItemListOnServer = SearchSortFilter.getSearchItemsList(body);
+        List<SearchItem> list = SearchSortFilter.getSearchItemsList(body);
+        searchItemsMapOnServer.put(zip, list);
 
-        assertEquals(searchItemListOnServer.size(),
-                searchItemListOnServer.stream()
+        assertEquals(list.size(),
+                list.stream()
                         .map(SearchItem::getZipCode)
                         .filter(zip::equals)
                         .count());
+
+        assertTrue(list.size() > 0, "No items in search results");
     }
 
     @Test
     @Order(4)
     void resultsOnClientAndServerMatch_HttpClientInterface() throws IOException {
+        assertTrue(TestHelper.compareLists(
+                new ArrayList<>(searchItemsMap.keySet()),
+                new ArrayList<>(searchItemsMapOnServer.keySet())));
 
-        assertTrue(searchItemList.containsAll(searchItemListOnServer)
-                && searchItemListOnServer.containsAll(searchItemList));
+        for (String key : searchItemsMap.keySet()) {
+            assertTrue(TestHelper.compareLists(
+                searchItemsMap.get(key),
+                searchItemsMapOnServer.get(key)));
+        }
     }
 
     @Order(5)
-    @Test
-    void resultsOnClientAndServerMatch_RestAssuredInterface() throws IOException {
+    @ParameterizedTest
+    @MethodSource("getAllArgsForTest")
+    void resultsOnClientAndServerMatch_RestAssuredInterface(String zip, String body) throws IOException {
+
+        List<SearchItem> list = searchItemsMap.get(zip);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(BODY2)
+                .body(body)
                 .when()
                 .post("https://staging-api.tophap.com/properties/search")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .body("items._source.address.UnparsedAddress",
-                        Matchers.hasItems(searchItemList.stream().map(SearchItem::getAddress).collect(Collectors.toList()).toArray()));
+                        Matchers.hasItems(list.stream().map(SearchItem::getAddress).toArray()));
     }
 }

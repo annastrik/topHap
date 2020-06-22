@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+
 public class TestHelper {
 
     private static class MovingExpectedCondition implements ExpectedCondition<WebElement> {
@@ -85,5 +87,9 @@ public class TestHelper {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean compareLists(List<?> o1, List<?> o2) {
+        return o1.containsAll(o2) && o2.containsAll(o1);
     }
 }
