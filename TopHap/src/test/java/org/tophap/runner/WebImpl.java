@@ -28,7 +28,7 @@ class WebImpl {
             HttpGet request = new HttpGet(HUB_URL + "/status");
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 remoteWebDriver = response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-            } catch (HttpHostConnectException e) {}
+            } catch (HttpHostConnectException ignored) {}
         }
     }
 

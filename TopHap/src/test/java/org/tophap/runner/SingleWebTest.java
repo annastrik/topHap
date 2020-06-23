@@ -8,7 +8,7 @@ import java.net.MalformedURLException;
 
 public class SingleWebTest extends SingleApiTest {
 
-    private WebImpl webImpl = new WebImpl();
+    private final WebImpl webImpl = new WebImpl();
 
     @BeforeEach
     private void setUp() throws MalformedURLException {
