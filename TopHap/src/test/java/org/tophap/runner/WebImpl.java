@@ -21,14 +21,14 @@ class WebImpl {
     public static final String HUB_URL = "http://localhost:4444/wd/hub";
 
     private static boolean remoteWebDriver = false;
-
-    public static void beforeAll() throws IOException {
-
+    static {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(HUB_URL + "/status");
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 remoteWebDriver = response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
             } catch (HttpHostConnectException ignored) {}
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -38,10 +38,14 @@ class WebImpl {
 
     private WebDriver driver;
 
-    protected void beforeTest() throws MalformedURLException {
+    protected void beforeTest() {
 
         if (isRemoteWebDriver()) {
-            this.driver = new RemoteWebDriver(new URL(HUB_URL), DesiredCapabilities.chrome());
+            try {
+                this.driver = new RemoteWebDriver(new URL(HUB_URL), DesiredCapabilities.chrome());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             this.driver = new ChromeDriver();
         }
