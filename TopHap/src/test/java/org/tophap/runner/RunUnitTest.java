@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class RunnerUnitTest {
+public class RunUnitTest {
 
     private static class SingleValid extends SingleApiTest {
         @Test
