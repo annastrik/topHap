@@ -5,9 +5,9 @@ import org.apache.http.impl.client.HttpClients;
 
 class ApiImpl {
 
-    private static CloseableHttpClient httpClient = HttpClients.createDefault();
+    private static final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    public CloseableHttpClient getHttpClient() {
+    CloseableHttpClient getHttpClient() {
         return httpClient;
     }
 }

@@ -3,7 +3,7 @@ package org.tophap.runner;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 
-public class MultipleWebTest extends MultipleApiTest {
+public abstract class MultipleWebTest extends MultipleApiTest {
 
     private final WebImpl webImpl = new WebImpl();
 

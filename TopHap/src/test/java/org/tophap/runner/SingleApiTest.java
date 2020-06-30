@@ -2,7 +2,7 @@ package org.tophap.runner;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 
-public class SingleApiTest extends BaseTest {
+public abstract class SingleApiTest extends BaseTest {
 
     private ApiImpl apiImpl = new ApiImpl();
 

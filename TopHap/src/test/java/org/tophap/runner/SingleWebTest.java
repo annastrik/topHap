@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 
-public class SingleWebTest extends SingleApiTest {
+public abstract class SingleWebTest extends SingleApiTest {
 
     private final WebImpl webImpl = new WebImpl();
 

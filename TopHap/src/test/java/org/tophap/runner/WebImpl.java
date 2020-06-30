@@ -32,13 +32,13 @@ class WebImpl {
         }
     }
 
-    protected boolean isRemoteWebDriver() {
+    private boolean isRemoteWebDriver() {
         return remoteWebDriver;
     }
 
     private WebDriver driver;
 
-    protected void beforeTest() {
+    void beforeTest() {
 
         if (isRemoteWebDriver()) {
             try {
@@ -53,11 +53,11 @@ class WebImpl {
         this.driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
 
-    protected void afterTest() {
+    void afterTest() {
         driver.quit();
     }
 
-    protected WebDriver getDriver() {
+    WebDriver getDriver() {
         return driver;
     }
 }
